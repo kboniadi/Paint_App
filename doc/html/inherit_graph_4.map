@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classQDialog.html" title="QDialog" alt="" coords="5,81,75,108"/>
+<area shape="rect" id="node2" href="$classAbout.html" title="The About class inherits QDialog. It manages 1 attribute: ui. " alt="" coords="125,5,181,32"/>
+<area shape="rect" id="node3" href="$classDelete.html" title="The Delete class inherits QDialog. It manages 3 attributes: shapeCount, ID_to_Delete, and ui. " alt="" coords="123,56,183,83"/>
+<area shape="rect" id="node4" href="$classLogin.html" title="The Login class derived from QDialog. Manages 1 attribute: ui. " alt="" coords="126,107,179,133"/>
+<area shape="rect" id="node5" href="$classMove.html" title="This class represents the Move dialog. It passes a signal to mainwindow&#39;s Move_Signal_Handler(). " alt="" coords="125,157,180,184"/>
+</map>

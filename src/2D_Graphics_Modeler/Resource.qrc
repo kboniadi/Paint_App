@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/res">
+        <file>img/ellipse.png</file>
+        <file>img/font.png</file>
+        <file>img/graph.png</file>
+        <file>img/polygon.png</file>
+        <file>img/rectangle.png</file>
+        <file>img/remove.png</file>
+        <file>img/add-file.png</file>
+        <file>img/floppy-disk.png</file>
+        <file>img/open.png</file>
+        <file>img/logo.png</file>
+        <file>img/trash.png</file>
+        <file>img/Edit.png</file>
+        <file>img/move.png</file>
+    </qresource>
+</RCC>

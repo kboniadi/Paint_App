@@ -1,0 +1,6 @@
+<map id="QDialog" name="QDialog">
+<area shape="rect" id="node2" href="$classAbout.html" title="The About class inherits QDialog. It manages 1 attribute: ui. " alt="" coords="5,167,89,259"/>
+<area shape="rect" id="node3" href="$classDelete.html" title="The Delete class inherits QDialog. It manages 3 attributes: shapeCount, ID_to_Delete, and ui. " alt="" coords="114,131,311,296"/>
+<area shape="rect" id="node4" href="$classLogin.html" title="The Login class derived from QDialog. Manages 1 attribute: ui. " alt="" coords="335,160,530,267"/>
+<area shape="rect" id="node5" href="$classMove.html" title="This class represents the Move dialog. It passes a signal to mainwindow&#39;s Move_Signal_Handler(). " alt="" coords="554,138,749,289"/>
+</map>

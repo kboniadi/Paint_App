@@ -1,0 +1,8 @@
+<map id="MainWindow" name="MainWindow">
+<area shape="rect" id="node2" href="$classQMainWindow.html" title="{QMainWindow\n||}" alt="" coords="5,1093,112,1170"/>
+<area shape="rect" id="node3" href="$classRenderArea.html" title="RenderArea class represents the canvas. Inherits QWidget and manages 1 attribute: shapes_list (vector..." alt="" coords="137,1027,282,1236"/>
+<area shape="rect" id="node4" href="$classQWidget.html" title="{QWidget\n||}" alt="" coords="126,740,199,817"/>
+<area shape="rect" id="node5" href="$classcs1c_1_1vector.html" title="{cs1c::vector\&lt; Shape *\&gt;\n||+ begin()\l+ end()\l+ cbegin()\l+ cend()\l+ vector()\l+ vector()\l+ vector()\l+ vector()\l+ getLength()\l+ getSize()\l+ clear()\l+ push_back()\l+ top()\l+ operator[]()\l+ operator=()\l+ operator=()\l+ erase()\l+ insert()\l+ resize()\l+ reserve()\l+ ~vector()\l}" alt="" coords="224,593,384,964"/>
+<area shape="rect" id="node13" href="$classcs1c_1_1vector.html" title="{cs1c::vector\&lt; T \&gt;\n||+ begin()\l+ end()\l+ cbegin()\l+ cend()\l+ vector()\l+ vector()\l+ vector()\l+ vector()\l+ getLength()\l+ getSize()\l+ clear()\l+ push_back()\l+ top()\l+ operator[]()\l+ operator=()\l+ operator=()\l+ erase()\l+ insert()\l+ resize()\l+ reserve()\l+ ~vector()\l}" alt="" coords="241,160,367,531"/>
+<area shape="rect" id="node7" href="$classShape.html" title="This class represents a Shape object. It manages 5 attribute. " alt="" coords="453,182,582,509"/>
+</map>

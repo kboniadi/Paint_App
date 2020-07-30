@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classShape.html" title="This class represents a Shape object. It manages 5 attribute. " alt="" coords="5,132,64,159"/>
+<area shape="rect" id="node2" href="$classEllipse.html" title="Represents an Ellipse object. Manages 3 attributes. " alt="" coords="122,5,183,32"/>
+<area shape="rect" id="node3" href="$classLine.html" title="Represents a Line object. Manages 2 attributes. " alt="" coords="129,56,176,83"/>
+<area shape="rect" id="node4" href="$classPolygon.html" title="This class represents a Polygon object. It manages 2 attribute. " alt="" coords="118,107,187,133"/>
+<area shape="rect" id="node5" href="$classPolyline.html" title="This class represents a Polyline object. It manages 2 attributes. " alt="" coords="119,157,187,184"/>
+<area shape="rect" id="node6" href="$classRectangle.html" title="This class represents a Rectangle object. It manages 4 attribute. " alt="" coords="112,208,193,235"/>
+<area shape="rect" id="node7" href="$classText.html" title="This class represents a Text object. Manages 6 attributes. " alt="" coords="129,259,177,285"/>
+</map>

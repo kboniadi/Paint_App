@@ -1,0 +1,6 @@
+<map id="RenderArea" name="RenderArea">
+<area shape="rect" id="node2" href="$classQWidget.html" title="{QWidget\n||}" alt="" coords="20,740,93,817"/>
+<area shape="rect" id="node3" href="$classcs1c_1_1vector.html" title="{cs1c::vector\&lt; Shape *\&gt;\n||+ begin()\l+ end()\l+ cbegin()\l+ cend()\l+ vector()\l+ vector()\l+ vector()\l+ vector()\l+ getLength()\l+ getSize()\l+ clear()\l+ push_back()\l+ top()\l+ operator[]()\l+ operator=()\l+ operator=()\l+ erase()\l+ insert()\l+ resize()\l+ reserve()\l+ ~vector()\l}" alt="" coords="118,593,278,964"/>
+<area shape="rect" id="node11" href="$classcs1c_1_1vector.html" title="{cs1c::vector\&lt; T \&gt;\n||+ begin()\l+ end()\l+ cbegin()\l+ cend()\l+ vector()\l+ vector()\l+ vector()\l+ vector()\l+ getLength()\l+ getSize()\l+ clear()\l+ push_back()\l+ top()\l+ operator[]()\l+ operator=()\l+ operator=()\l+ erase()\l+ insert()\l+ resize()\l+ reserve()\l+ ~vector()\l}" alt="" coords="135,160,261,531"/>
+<area shape="rect" id="node5" href="$classShape.html" title="This class represents a Shape object. It manages 5 attribute. " alt="" coords="347,182,476,509"/>
+</map>
