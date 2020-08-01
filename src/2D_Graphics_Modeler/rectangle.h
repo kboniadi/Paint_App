@@ -11,7 +11,6 @@
  */
 class Rectangle: public Shape{
 public:
-//    Rectangle() {};
     /*!
      * \brief initializes data pertaining to Rectangle and shape
      * \param color of the pen
@@ -26,28 +25,37 @@ public:
      * \param width of the Rectangle
      * \param length of the Rectangle
     */
-    explicit Rectangle(int id, int color, int penWidth, int style, int cap, int join,
-		int brushColor, int brushStyle, int aX, int aY, double aWidth,
-        double aLength, QString shapeType);
+    explicit Rectangle(const QPen &pen = {}, const QBrush &brush = {},
+        const QPoint &point = {},id_t id = 0, int aWidth = 0, int aHeight = 0)
+		: Shape{id, pen, brush, point}, width{aWidth}, height{aHeight} {}
 
+	explicit Rectangle(const QRect &rect, id_t id = 0, const QPen &pen = {},
+		const QBrush &brush = {})
+		: Shape{id, pen, brush, rect.center()}, width{rect.width()},
+		height{rect.height()} {}
     /*!
      * \brief deallocates any allocated memory
      */
-    ~Rectangle() override {};
+	~Rectangle() override = default;
+	Rectangle(Rectangle&&) noexcept;
+	Rectangle& operator=(Rectangle) noexcept;
+	Rectangle& operator=(Rectangle&&) noexcept;
 
-    /*!
-     * \brief moves the Rectangle or parts of Rectangle
-     * \param xcoord of upper left corner
-     * \param ycoord of upper left corner
-     */
-    void Move(const int xcoord,
-        const int ycoord) override;
+
+	void setWidth(int width) {this->width = width;}
+	void setLength(int length) {this->height = length;}
+	void setRect(const QRect&);
+
+	int getwidth() const {return width;}
+	int getLength() const {return height;}
+	QRect getRect() const override;
+	ShapeType getShape() const override {return Shape::Rectangle;}
 
     /*!
      * \brief Draws the Rectangle
      * \param (QPaintDevice*) device to interface with painter object
      */
-    void Draw(QPaintDevice *) override;
+	void draw(QPaintDevice*) override;
 
     /*!
      * \brief calcualates the area of a Rectangle
@@ -60,14 +68,10 @@ public:
      * \return (double) perimeter of Rectangle
      */
     double perimeter() const override;
-
-
-private:
-    int x;
-    int y;
-    double width;
-    double length;
-
+protected:
+    explicit Rectangle(id_t id): Shape{id}, width{0}, height{0} {}
+	int width{0};
+	int height{0};
 };
 
 #endif // RECTANGLE_H

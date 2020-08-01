@@ -3,15 +3,13 @@
 
 #include <math.h>
 #include <QPoint>
-#include "shape.h"
-
-constexpr int MAX_VERT = 8;	//!<max number of supported vertices
+#include "polyline.h"
 
 /*!
   \class Polygon: inherits Shape
  * \brief This class represents a Polygon object. It manages 2 attribute.
  */
-class Polygon: public Shape {
+class Polygon: public Polyline {
 public:
 
 	/*!
@@ -26,26 +24,24 @@ public:
 	 * \param verts number of vertices
 	 * \param points pointer to QPoint data
 	 */
-    explicit Polygon(int, int, int, int, int, int, int , int, int, QPoint*, QString);
+	explicit Polygon(const id_t id = 0, const QPen& pen = {},
+		const QBrush& brush = {}, cs1c::vector<QPoint> points = {})
+		: Polyline{id, pen, brush, std::move(points)} {}
 
 	/*!
 	 * \brief deallocates any allocated memory
 	 */
-	~Polygon() override {}
+	~Polygon() override = default;
+    Polygon(Polygon&&) noexcept;
+    Polygon& operator=(Polygon&&) noexcept;
 
-	/*!
-     * \brief moves the entire Polygon to coordinate
-     * moves first point in vert_list to coordinate
-	 * \param xcoord of that vertex
-	 * \param ycoord of that vertex
-	 */
-    void Move(const int xcoord, const int ycoord) override;
-
+	ShapeType getShape() const override {return Shape::Polygon;}
+	QRect getRect() const override;
 	/*!
 	 * \brief Draws the Polygon
 	 * \param (QPaintDevice*) device to interface with painter object
 	 */
-	void Draw(QPaintDevice *) override;
+	void draw(QPaintDevice *) override;
 
 	/*!
 	 * \brief calcualates the area of a polygon with n vertices
@@ -59,7 +55,6 @@ public:
 	 */
 	double perimeter() const override;
 private:
-
 	/*!
 	 * \brief Distance Formula for two QPoint objects
 	 * \param one first QPoint object representing x1 and y1
@@ -67,10 +62,8 @@ private:
 	 * \return (double) the distance between these two points
 	 */
 	inline double Dist_Formu(const QPoint one, const QPoint two) const
-	{return sqrt(pow(two.x() - one.x(), 2) + pow(two.y() - one.y(), 2) * 1.0);}
-
-	QPoint vert_list[MAX_VERT];
-	int vert_count;
+	{return std::sqrt(std::pow(two.x() - one.x(), 2) +
+		std::pow(two.y() - one.y(), 2) * 1.0);}
 };
 
 #endif // POLYGON_H

@@ -1,43 +1,55 @@
 #include "polyline.h"
 
-Polyline::Polyline(int id, int color, int width, int style, int cap, int join,
-                   int brush_color, int brush_style, int verts, QPoint *points, QString shapeType)
-         : Shape(id, color, width, style, cap, join, brush_color, brush_style, shapeType)
+Polyline::Polyline(const id_t id, const QPen& pen,
+				   const QBrush& brush, cs1c::vector<QPoint> points)
+	: Shape(id, pen, brush, QPoint{}), points{std::move(points)}
 {
-    vert_count = verts;
-    assert(verts < 9 && verts > -1);
-    for (int i = 0; i < verts; ++i)
-        vert_list[i] = points[i];
+	setCenter();
 }
 
-void Polyline::Move(const int xcoord, const int ycoord)
+Polyline::Polyline(Polyline &&move) noexcept
+    : Shape{(id_t) -1}
 {
-    if (vert_count > 0) {
-        int xOffset = xcoord - vert_list[0].x();
-        int yOffset = ycoord - vert_list[0].y();
-
-        for (int i = 0; i < vert_count; ++i) {
-            vert_list[i].setX( vert_list[i].x() + xOffset );
-            vert_list[i].setY( vert_list[i].y() + yOffset );
-        }
-    }
+    swap(move);
+    std::swap(points, move.points);
 }
 
-void Polyline::Draw(QPaintDevice *device)
+Polyline& Polyline::operator=(Polyline &&other) noexcept
+{
+    Polyline temp{std::move(other)};
+    swap(temp);
+    std::swap(points, temp.points);
+    return *this;
+}
+
+QRect Polyline::getRect() const
+{
+	QPoint start = (points.empty() ? QPoint{} : points[0]) + getPosition();
+		QRect rect{start, start};
+		for (auto p: points) {
+			rect.setLeft(std::min(p.x() + getPosition().x(), rect.left()));
+			rect.setRight(std::max(p.x() + getPosition().x(), rect.right()));
+			rect.setTop(std::min(p.y() + getPosition().y(), rect.top()));
+			rect.setBottom(std::max(p.y() + getPosition().y(), rect.bottom()));
+		}
+		return rect;
+}
+
+void Polyline::draw(QPaintDevice *device)
 {
     getPainter().begin(device);
     getPainter().setPen(getPen());
     getPainter().setBrush(getBrush());
-    getPainter().drawPolyline(vert_list, vert_count);
+	getPainter().drawPolyline(&(*points.begin()), points.size());
     getPainter().end();
 }
 
-//double Polyline::perimeter() const
-//{
-//    double length = 0.0;
+void Polyline::setCenter()
+{
+	QPoint temp = getPosition();
+	setPosition(getRect().center());
+	QPoint offset = temp - getPosition();
 
-//    for (int i = 0; i < vert_count-1; ++i)
-//        length += DistanceFormu(vert_list[i], vert_list[i+1]);
-
-//    return length;
-//}
+	for (auto a: points)
+		a += offset;
+}

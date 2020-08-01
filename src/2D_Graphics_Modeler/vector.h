@@ -12,8 +12,8 @@ class vector
 {
 private:
     T * data;
-    std::size_t length;
-    std::size_t size;
+	std::size_t size_;
+	std::size_t capacity_;
 public:
 
     // beginning of iterator class definition and iterator methods.
@@ -30,22 +30,22 @@ public:
         typedef std::ptrdiff_t difference_type;
         iterator(pointer ptr) : ptr_{ptr} {};
         self_type operator++() {
-            self_type i = *this;
-            ptr_++;
-            return i;
+			++ptr_;
+			return *this;
         }
 		self_type operator++(int) {
-            ptr_++;
-            return *this;
+			self_type i = *this;
+			ptr_++;
+			return i;
         }
         self_type operator--() {
-            self_type i = *this;
-            ptr_--;
-            return i;
+			--ptr_;
+			return *this;
         }
 		self_type operator--(int) {
-            --ptr_;
-            return *this;
+			self_type i = *this;
+			ptr_--;
+			return i;
         }
         std::size_t operator-(const self_type& rhs) {
             return ptr_ - rhs.ptr_;
@@ -56,17 +56,17 @@ public:
         self_type operator+(std::size_t num) {
             return ptr_ + num;
         }
-        self_type operator+= (int value) {
-            ptr_+=value;
-            return ptr_;
-        }
-        self_type operator-= (int value) {
-            ptr_-=value;
-            return ptr_;
-        }
         std::size_t operator+(const self_type& rhs) {
             return ptr_ + rhs.ptr_;
         }
+		self_type operator+= (int value) {
+			ptr_+=value;
+			return ptr_;
+		}
+		self_type operator-= (int value) {
+			ptr_-=value;
+			return ptr_;
+		}
         bool operator<(const self_type& rhs) {return ptr_ < rhs.ptr_;}
         bool operator>(const self_type& rhs) {return ptr_ > rhs.ptr_;}
         bool operator<=(const self_type& rhs) {return ptr_ <= rhs.ptr_;}
@@ -92,32 +92,24 @@ public:
         typedef std::random_access_iterator_tag iterator_category;
         typedef std::ptrdiff_t difference_type;
         const_iterator(pointer ptr) : ptr_{ptr} {};
-        self_type operator++() {
-            self_type i = *this;
-            ptr_++;
-            return i;
-        }
-        self_type operator+= (int value) {
-            ptr_+=value;
-            return ptr_;
-        }
-        self_type operator-= (int value) {
-            ptr_-=value;
-            return ptr_;
-        }
+		self_type operator++() {
+			++ptr_;
+			return *this;
+		}
 		self_type operator++(int) {
-            ptr_++;
-            return *this;
-        }
-        self_type operator--() {
-            self_type i = *this;
-            ptr_--;
-            return i;
-        }
+			self_type i = *this;
+			ptr_++;
+			return i;
+		}
+		self_type operator--() {
+			--ptr_;
+			return *this;
+		}
 		self_type operator--(int) {
-            --ptr_;
-            return *this;
-        }
+			self_type i = *this;
+			ptr_--;
+			return i;
+		}
         std::size_t operator-(const self_type& rhs) {
             return ptr_ - rhs.ptr_;
         }
@@ -130,6 +122,14 @@ public:
         std::size_t operator+(const self_type& rhs) {
             return ptr_ + rhs.ptr_;
         }
+		self_type operator+= (int value) {
+			ptr_+=value;
+			return ptr_;
+		}
+		self_type operator-= (int value) {
+			ptr_-=value;
+			return ptr_;
+		}
         bool operator<(const self_type& rhs) {return ptr_ < rhs.ptr_;}
         bool operator>(const self_type& rhs) {return ptr_ > rhs.ptr_;}
         bool operator<=(const self_type& rhs) {return ptr_ <= rhs.ptr_;}
@@ -143,15 +143,15 @@ public:
         pointer ptr_;
     };
     iterator begin() { return iterator(data); }
-    iterator end() { return iterator(data+length); }
-    const_iterator cbegin() { return const_iterator(data); }
-    const_iterator cend() { return const_iterator(data+length); }
+	iterator end() { return iterator(data+size_); }
+	const_iterator begin() const { return const_iterator(data); }
+	const_iterator end() const { return const_iterator(data+size_); }
     /*!
      * \brief default constructor of vector. does not allocate memory
      * 
      * 
      */
-    vector() : data{nullptr}, length{0}, size{0} {};
+	vector() : data{nullptr}, size_{0}, capacity_{0} {};
     /*!
      * \brief copy constructor of vector
      * \param cosnt reference to a vector<T> object
@@ -167,27 +167,29 @@ public:
      * \param size of array to be allocated
      */
     explicit vector(std::size_t size)
-        : data{size? new T[size]: nullptr}, length{size},
-        size{size} {
-        for (std::size_t i = 0; i < size; i++)
+		: data{size? new T[size]: nullptr}, size_{size},
+		capacity_{size} {
+		for (std::size_t i = 0; i < capacity_; i++)
             data[i] = T();
     }
     /*!
-     * \brief returns length of the array
+	 * \brief returns size_ of the array
      */
-    std::size_t getLength();
+	std::size_t size() const {return size_;}
     /*!
      * \brief gets the size of the allocated array
      */
-    std::size_t getSize();
+	std::size_t capacity() const {return capacity_;}
+
+	bool empty() const {return size_ == 0;}
     /*!
      * \brief deallocates the array and sets all values to null
      */
     void clear() noexcept {
         delete[] data;
         data = nullptr;
-        length = 0;
-        size = 0;
+		size_ = 0;
+		capacity_ = 0;
     }
     /*!
      * \brief adds an element to the vector
@@ -207,6 +209,10 @@ public:
     T& operator[](int index) {
         return data[index];
     }
+	const T& operator[](int index) const
+	{
+		return data[index];
+	}
     /*!
      * \brief assignment operator of vector<T>
      * \param orig vector<T> to be copied
@@ -257,14 +263,14 @@ typename vector<T>::iterator vector<T>::erase(iterator pos) {
     for (auto it = pos + 1; it != end(); ++it)
         *(it - 1) = *it;
     *(end() - 1) = 0;
-    length--;
+	size_--;
     return pos;
 }
 
 template<class T>
 void vector<T>::resize(std::size_t newsize) {
     reserve(newsize);
-    for (std::size_t i = length; i < newsize; ++i) {
+	for (std::size_t i = size_; i < newsize; ++i) {
         data[i] = T();
     }
 //     = newsize;
@@ -276,68 +282,58 @@ typename vector<T>::iterator vector<T>::insert(iterator it, const T& val) {
     if (data == nullptr) {
         std::cout << 1;
         push_back(val);
-    } else if (length == size) {
+	} else if (size_ == capacity_) {
         offset = it - begin();
         std::cout << 2;
-        reserve(2 * size);
+		reserve(2 * capacity_);
         it = begin()+offset;
     }
     for (auto i = end(); i != it; --i)
         *i = *(i - 1);
-    ++length;
+	++size_;
     *it = val;
     return it;
 }
 
 template<class T>
-std::size_t vector<T>::getLength() {
-    return length;
-}
-
-template <class T>
-std::size_t vector<T>::getSize(){
-    return size;
-}
-
-template<class T>
 vector<T>::vector(const vector<T>& orig) {
-    if (orig.size == 0){
+	if (orig.capacity_ == 0){
         data = nullptr;
-        size = 0;
-        length = 0;
+		capacity_ = 0;
+		size_ = 0;
     }
     else {
-        size = orig.size;
-        length = orig.length;
-        data = new T[size];
-		for (size_t i = 0; i < orig.length; ++i) {
+		capacity_ = orig.capacity_;
+		size_ = orig.size_;
+		data = new T[capacity_];
+		for (size_t i = 0; i < orig.size_; ++i) {
             data[i] = orig.data[i];
         }
     }
 }
 
 template<class T>
-vector<T>::vector(vector&& orig) : data{nullptr}, length{0}, size{0} {
+vector<T>::vector(vector&& orig) : data{nullptr}, size_{0}, capacity_{0} {
     data = orig.data;
     orig.data = nullptr;
-    size = orig.size;
-    length = orig.length;
+	capacity_ = orig.capacity_;
+	size_ = orig.size_;
 }
 
 template<class T>
 bool vector<T>::reserve(std::size_t newSize) {
-    if (newSize <= size) {
+	if (newSize <= capacity_) {
         return false;
         // cant reserve less than existing.
     }
     else {
         T * newData = new T[newSize];
-        for (std::size_t i = 0; i < length; ++i) {
+		for (std::size_t i = 0; i < size_; ++i) {
             newData[i] = data[i];
         }
         delete[] data;
         data = newData;
-        size = newSize;
+		capacity_ = newSize;
         return true;
     }
 }
@@ -345,20 +341,20 @@ bool vector<T>::reserve(std::size_t newSize) {
 template<class T>
 void vector<T>::push_back(const T& newElement) {
     if (data == nullptr) {
-        size = 16;
-        length = 0;
-        data = new T[size];
-        data[length] = newElement;
-        length++;
+		capacity_ = 16;
+		size_ = 0;
+		data = new T[capacity_];
+		data[size_] = newElement;
+		size_++;
     }
-    else if (length >= size) {
-        reserve(size*2);
-        data[length] = newElement;
-        length++;
+	else if (size_ >= capacity_) {
+		reserve(capacity_*2);
+		data[size_] = newElement;
+		size_++;
     }
     else {
-        data[length] = newElement;
-        length++;
+		data[size_] = newElement;
+		size_++;
     }
 }
 
@@ -372,14 +368,14 @@ vector<T>& vector<T>::operator=(const vector<T>& orig) {
     if (data != nullptr) {
         delete[] data;
         data = nullptr;
-        size = 0;
-        length = 0;
+		capacity_ = 0;
+		size_ = 0;
     }
 
-    size = orig.size;
-    length = orig.length;
-    data = new T[size];
-    for (std::size_t i = 0; i < length; ++i) {
+	capacity_ = orig.capacity_;
+	size_ = orig.size_;
+	data = new T[capacity_];
+	for (std::size_t i = 0; i < size_; ++i) {
         data[i] = orig.data[i];
     }
     return *this;
@@ -395,8 +391,8 @@ vector<T>& vector<T>::operator=(vector<T>&& orig) {
         delete[] data;
         data = nullptr;
     }
-    size = orig.size;
-    length = orig.length;
+	capacity_ = orig.capacity_;
+	size_ = orig.size_;
     data = orig.data;
     orig.data = nullptr;
     return *this;

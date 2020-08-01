@@ -49,20 +49,15 @@ public:
     /*!
      * \brief deallocates any allocated memory
      */
-    ~Text() override {}
-
-    /*!
-     * \brief moves the Text
-     * \param new xcoord of that vertex
-     * \param new ycoord of that vertex
-     */
-    void Move(const int xcoord, const int ycoord) override;
+	~Text() override = default;
+	ShapeType getShape() const override {return Shape::Text;}
+	QRect getRect() const override;
 
     /*!
      * \brief Draws the Text
      * \param (QPaintDevice*) device to interface with painter object
      */
-    void Draw(QPaintDevice *) override;
+	void draw(QPaintDevice *) override;
 
     /*!
      * \brief sets all the components of a font object

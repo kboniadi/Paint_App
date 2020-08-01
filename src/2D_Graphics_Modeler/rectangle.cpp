@@ -1,38 +1,72 @@
 #include "rectangle.h"
 
-Rectangle::Rectangle(int id, int color, int penWidth, int style, int cap, int join,
-	int brushColor, int brushStyle, int aX, int aY, double aWidth,
-    double aLength, QString shapeType)
-    :Shape(id, color, penWidth, style, cap, join, brushColor, brushStyle, shapeType),
-		x(aX), y(aY), width(aWidth), length(aLength)
-{}
+Rectangle::Rectangle(Rectangle &&move) noexcept
+	: Shape{(id_t) -1}, width{0}, height{0}
+{
+	swap(move);
+	std::swap(width, move.width);
+	std::swap(height, move.height);
+
+	move.width = 0;
+	move.height = 0;
+	move.setID((id_t) -1);
+	move.setPen(QPen{});
+	move.setBrush(QBrush{});
+}
+Rectangle& Rectangle::operator=(Rectangle rhs) noexcept
+{
+	swap(rhs);
+	std::swap(width, rhs.width);
+	std::swap(height, rhs.height);
+	return *this;
+}
+
+Rectangle& Rectangle::operator=(Rectangle &&rhs) noexcept
+{
+	Rectangle move{std::move(rhs)};
+	swap(move);
+	std::swap(width, move.width);
+	std::swap(height, move.height);
+	return *this;
+}
+
+QRect Rectangle::getRect() const
+{
+	QRect rect{0, 0, width, height};
+	rect.moveCenter(getPosition());
+	return rect;
+}
+
+void Rectangle::setRect(const QRect &rect)
+{
+	setPosition(rect.center());
+	width = rect.width();
+	height = rect.height();
+}
 
 //drawing the rectangle on the drawing area
-void Rectangle::Draw(QPaintDevice *device)
+void Rectangle::draw(QPaintDevice *device)
 {
 	getPainter().begin(device);
 	getPainter().setPen(getPen());
 	getPainter().setBrush(getBrush());
-	getPainter().drawRect(x,y, width , length);
-	getPainter().end();
-}
 
-//move the rectangle
-void Rectangle::Move(const int xcoord, const int ycoord)
-{
-  x = xcoord;
-  y = ycoord;
+	QRect rect = getRect();
+	rect.moveCenter(QPoint{});
+
+	getPainter().drawRect(rect);
+	getPainter().end();
 }
 
 //return the area of the rectangle
 double Rectangle::area() const
 {
-    return width * length;
+	return std::abs(width * height);
 }
 
 //return the perimeter of the rectangle
 double Rectangle::perimeter() const
 {
-	return 2 * (width + length);
+	return std::abs(2 * (width + height));
 }
 

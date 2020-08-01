@@ -3,8 +3,7 @@
 
 #include <math.h>
 #include "shape.h"
-
-const int MAX_POLYLINE_VERT = 8;
+#include "vector.h"
 
 /*!
   \class Polyline: inherits Shape
@@ -25,26 +24,24 @@ public:
      * \param verts number of vertices
      * \param points pointer to QPoint data
      */
-    explicit Polyline(int, int, int, int, int, int, int , int, int, QPoint*, QString shapeType);
-
+	explicit Polyline(const id_t id = 0, const QPen& pen = {},
+		const QBrush& brush = {}, cs1c::vector<QPoint> points = {});
     /*!
      * \brief deallocates any allocated memory
      */
-    ~Polyline() override {}
+	~Polyline() override = default;
+    Polyline(Polyline&&) noexcept;
+    Polyline& operator=(Polyline&&) noexcept;
 
-    /*!
-     * \brief moves the entire Polygon to coordinate
-     * moves first point in vert_list to coordinate
-     * \param xcoord of that vertex
-     * \param ycoord of that vertex
-     */
-    void Move (const int xcoord, const int ycoord) override;
+	ShapeType getShape() const override {return Shape::Polyline;}
+	QRect getRect() const override;
+    std::size_t getSize() const {return points.size();}
 
     /*!
      * \brief Draws the Polyline
      * \param (QPaintDevice*) device to interface with painter object
      */
-    void Draw (QPaintDevice *) override;
+	void draw(QPaintDevice *) override;
 
     /*!
      * \brief returns the area of a Polyline
@@ -57,13 +54,9 @@ public:
      * \return (double) perimeter of Polyline always returns -1
      */
     inline double perimeter() const override {return -1;}
-private:
-
-//    inline double DistanceFormu(const QPoint one, const QPoint two) const
-//    {return sqrt(pow(two.x() - one.x(), 2) + pow(two.y() - one.y(), 2) * 1.0);}
-
-    QPoint vert_list[MAX_POLYLINE_VERT];
-    int vert_count;
+protected:
+	void setCenter();
+	cs1c::vector<QPoint> points;
 };
 
 #endif // POLYLINE_H

@@ -27,11 +27,6 @@ void Text::setFont(int pointSize, QString fontFamily, QFont::Style fontStyle,
     font.setWeight(weight);
 }
 
-void Text::Move(const int xcoord, const int ycoord)
-{
-    corner_vertex = QPoint(xcoord, ycoord);
-}
-
 void Text::Draw(QPaintDevice *device)
 {
 	getPainter().begin(device);

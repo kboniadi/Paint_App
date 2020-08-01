@@ -31,7 +31,7 @@ void RenderArea::paintEvent(QPaintEvent */*event*/)
     //e.g. QPoints for a polygon
 
 	for (auto it = shapes_list.begin(); it != shapes_list.end(); ++it) {
-		(*it)->Draw(this);
+		(*it)->draw(this);
     }
 	update();
 	//save

@@ -3,13 +3,13 @@
 
 #include <math.h>
 #include <QPoint>
-#include "shape.h"
+#include "rectangle.h"
 
 /*!
  * @class Ellipse
  * @brief Represents an Ellipse object. Manages 3 attributes.
  */
-class Ellipse : public Shape
+class Ellipse : public Rectangle
 {
 public:
 
@@ -26,27 +26,26 @@ public:
      * \param radius in the x direction
      * \param radius in the y direction
      */
-    explicit Ellipse(int id, int color, int pen_width, int style, int cap, int join,
-        int brush_color, int brush_style, QPoint center, int a, int b, QString shapeType);
+	explicit Ellipse(id_t id = 0, const QPen &pen = {},
+		const QBrush &brush = {}, const QPoint &point = {}, int x = 0,
+        int y = 0): Rectangle{pen, brush, point, id, x, y} {}
 
+    explicit Ellipse(const QRect &rect, id_t id = 0, const QPen &pen = {},
+        const QBrush &brush = {}): Rectangle{rect, id, pen, brush} {}
     /*!
      * \brief deallocates any allocated memory
      */
-    ~Ellipse() override {};
+	~Ellipse() override = default;
+    Ellipse(Ellipse&&) noexcept;
+    Ellipse& operator=(Ellipse&&) noexcept;
 
-    /*!
-     * \brief moves the Ellipse
-     * \param point_index is unused
-     * \param x coordinate of center
-     * \param y coordinate of center
-     */
-    void Move(const int xcoord, const int ycoord) override;
-
+	ShapeType getShape() const override {return Shape::Ellipse;}
+	QRect getRect() const override;
     /*!
      * \brief Draws the Polygon
      * \param (QPaintDevice*) device to interface with painter object
      */
-    void Draw(QPaintDevice *device) override;
+	void draw(QPaintDevice *device) override;
 
     /*!
      * \brief calcualates the area of a polygon with n vertices
@@ -62,22 +61,9 @@ public:
 
 private:
 
-    /*!
-     * \brief center point (x1, y1)
-     */
     QPoint center;
-
-    /*!
-     * \brief radius in the x direction
-     */
-    int a;
-
-    /*!
-     * \brief radius in the y direction
-     */
-    int b;
-
-
+	int radius_x;
+	int radius_y;
 };
 
 #endif // ELLIPSE_H
