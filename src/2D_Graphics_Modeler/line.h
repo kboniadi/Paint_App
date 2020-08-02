@@ -38,8 +38,8 @@ public:
     Line(Line&&) noexcept;
     Line& operator=(Line&&) noexcept;
 
-    void setStart(QPoint &otherstart) {startPoint = otherstart;}
-    void setEnd(QPoint &otherend) {endPoint = otherend;}
+    void setStart(const QPoint &otherstart) {startPoint = otherstart;}
+    void setEnd(const QPoint &otherend) {endPoint = otherend;}
 
 	QRect getRect() const override;
 	ShapeType getShape() const override {return Shape::Line;}

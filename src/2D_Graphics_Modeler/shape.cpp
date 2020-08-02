@@ -3,7 +3,7 @@
 
 static unsigned int shapeid = 0;
 
-const QMap<QColor, QString> COLOR_NAMES {
+const QMap<Qt::GlobalColor, QString> COLOR_NAMES {
 	{Qt::white, "white"},
 	{Qt::black, "black"},
 	{Qt::red, "red"},
@@ -15,7 +15,7 @@ const QMap<QColor, QString> COLOR_NAMES {
 	{Qt::gray, "gray"}
 };
 
-const QMap<QColor, QString> STYLE_NAMES {
+const QMap<Qt::PenStyle, QString> STYLE_NAMES {
 	{Qt::NoPen, "NoPen"},
 	{Qt::SolidLine, "SolidLine"},
 	{Qt::DashLine, "DashLine"},
@@ -25,20 +25,20 @@ const QMap<QColor, QString> STYLE_NAMES {
 	{Qt::CustomDashLine, "CustomDashLine"}
 };
 
-const QMap<QColor, QString> CAP_NAMES {
+const QMap<Qt::PenCapStyle, QString> CAP_NAMES {
 	{Qt::FlatCap, "FlatCap"},
 	{Qt::SquareCap, "SquareCap"},
 	{Qt::RoundCap, "RoundCap"}
 };
 
-const QMap<QColor, QString> JOIN_NAMES {
+const QMap<Qt::PenJoinStyle, QString> JOIN_NAMES {
 	{Qt::MiterJoin, "MiterJoin"},
 	{Qt::BevelJoin, "BevelJoin"},
 	{Qt::RoundJoin, "RoundJoin"},
 	{Qt::SvgMiterJoin, "SvgMiterJoin"}
 };
 
-const QMap<QColor, QString> BSTYLE_NAMES {
+const QMap<Qt::BrushStyle, QString> BSTYLE_NAMES {
 	{Qt::NoBrush, "NoBrush"},
 	{Qt::SolidPattern, "SolidPattern"},
 	{Qt::HorPattern, "HorPattern"},

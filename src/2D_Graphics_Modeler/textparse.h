@@ -22,47 +22,37 @@ cs1c::vector< Shape * > textParse();
 * \brief finds appropraite array index for the key returns -1 key is invalid
 * \param key is the string to be searched
 */
-int getBrushStyle(std::string key);
+Qt::BrushStyle getBrushStyle(std::string key);
 /*!
 * \brief finds appropraite array index for the key returns -1 key is invalid
 * \param key is the string to be searched
 */
-int getJoinStyle(std::string key);
+Qt::PenJoinStyle getJoinStyle(std::string key);
 /*!
 * \brief finds appropraite array index for the key returns -1 key is invalid
 * \param key is the string to be searched
 */
-int getCapStyle(std::string key);
+Qt::PenCapStyle getCapStyle(std::string key);
 /*!
 * \brief finds appropraite array index for the key returns -1 key is invalid
 * \param key is the string to be searched
 */
-int getPenStyle(std::string key);
+Qt::PenStyle getPenStyle(std::string key);
 /*!
 * \brief finds appropraite array index for the key returns -1 key is invalid
 * \param key is the string to be searched
 */
-int getColor(std::string key);
+Qt::GlobalColor getColor(std::string key);
 /*!
 * \brief finds appropraite array index for the key returns -1 key is invalid
 * \param key is the string to be searched
 */
-int getTextAlig(std::string key);
+QFont::Weight getFontWeight(std::string key);
 /*!
 * \brief finds appropraite array index for the key returns -1 key is invalid
 * \param key is the string to be searched
 */
-int getTextStyle(std::string key);
-/*!
-* \brief finds appropraite array index for the key returns -1 key is invalid
-* \param key is the string to be searched
-*/
-int getFontWeight(std::string key);
-/*!
-* \brief finds appropraite array index for the key returns -1 key is invalid
-* \param key is the string to be searched
-*/
-int getShapeType(std::string key);
+Shape::ShapeType getShapeType(std::string key);
 /*!
 * \brief fcreates a line object from the values parsed
 * \param in is ifstream object

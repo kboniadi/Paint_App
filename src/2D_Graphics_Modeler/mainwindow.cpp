@@ -116,7 +116,7 @@ void MainWindow::on_actionAdd_Text_triggered()
 
 void MainWindow::on_actionDelete_triggered()
 {
-	int numShapes = renderArea->getShapes().getLength();
+	int numShapes = renderArea->getShapes().size();
     Delete *del = new Delete(numShapes, this);
     QObject::connect(del, &Delete::ID_Delete_Signal, this,
                      &MainWindow::ID_Delete_Signal_Handler);
@@ -130,7 +130,7 @@ void MainWindow::ID_Delete_Signal_Handler(int ID)
 
 void MainWindow::on_actionMove_triggered()
 {
-	int numShapes = renderArea->getShapes().getLength();
+	int numShapes = renderArea->getShapes().size();
     Move *move = new Move(numShapes, this);
     QObject::connect(move, &Move::Move_Signal, this,
                      &MainWindow::Move_Signal_Handler);

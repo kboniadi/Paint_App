@@ -32,7 +32,7 @@ void Ellipse::draw(QPaintDevice *device)
 
 QRect Ellipse::getRect() const
 {
-	QRect rect{0, 0, radius_x, radius_y};
+	QRect rect{0, 0, radius_x * 2, radius_y * 2};
 	rect.moveCenter(getPosition());
 	return rect;
 }

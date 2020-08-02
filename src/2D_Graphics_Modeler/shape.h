@@ -5,11 +5,11 @@
 #include <QPaintDevice>
 #include <assert.h>
 
-extern const QMap<QColor, QString> COLOR_NAMES;
-extern const QMap<QColor, QString> STYLE_NAMES;
-extern const QMap<QColor, QString> CAP_NAMES;
-extern const QMap<QColor, QString> JOIN_NAMES;
-extern const QMap<QColor, QString> BSTYLE_NAMES;
+extern const QMap<Qt::GlobalColor, QString> COLOR_NAMES;
+extern const QMap<Qt::PenStyle, QString> STYLE_NAMES;
+extern const QMap<Qt::PenCapStyle, QString> CAP_NAMES;
+extern const QMap<Qt::PenJoinStyle, QString> JOIN_NAMES;
+extern const QMap<Qt::BrushStyle, QString> BSTYLE_NAMES;
 
 /*!
  * @class Shape

@@ -58,7 +58,7 @@ void RenderArea::addShape(Shape *shape)
 
 void RenderArea::deleteShape(int ID)
 {
-	if (static_cast<size_t>(ID) > shapes_list.getLength()) {
+	if (static_cast<size_t>(ID) > shapes_list.size()) {
 		QMessageBox::warning(this, "Errors",
 		"That ID is out of range!");
 		return;
@@ -71,9 +71,9 @@ void RenderArea::moveShape(int ID, int x_coord, int y_coord)
 {
 	for (auto it = shapes_list.begin(); it != shapes_list.end(); it++)
     {
-        if ((*it)->getID() == ID)
+		if ((*it)->getID() == (id_t) ID)
         {
-            (*it)->Move(x_coord, y_coord);
+			(*it)->move(x_coord, y_coord);
             break;
         }
     }

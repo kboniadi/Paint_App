@@ -26,7 +26,7 @@ public:
      * \param length of the Rectangle
     */
     explicit Rectangle(const QPen &pen = {}, const QBrush &brush = {},
-        const QPoint &point = {},id_t id = 0, int aWidth = 0, int aHeight = 0)
+		const QPoint &point = {}, id_t id = 0, int aWidth = 0, int aHeight = 0)
 		: Shape{id, pen, brush, point}, width{aWidth}, height{aHeight} {}
 
 	explicit Rectangle(const QRect &rect, id_t id = 0, const QPen &pen = {},
