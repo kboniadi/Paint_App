@@ -1,5 +1,10 @@
 #include "ellipse.h"
 
+Ellipse::Ellipse(Shape::id_t id, const QPen &pen, const QBrush &brush, const QPoint &point, int x, int y)
+	: Rectangle{pen, brush, point, id, x, y} {}
+
+Ellipse::~Ellipse() = default;
+
 Ellipse::Ellipse(Ellipse &&other) noexcept
     : Rectangle{(id_t) -1}
 {
@@ -30,22 +35,15 @@ void Ellipse::draw(QPaintDevice *device)
 	getPainter().end();
 }
 
-QRect Ellipse::getRect() const
-{
-	QRect rect{0, 0, radius_x * 2, radius_y * 2};
-	rect.moveCenter(getPosition());
-	return rect;
-}
-
 double Ellipse::area() const
 {
-    return M_PI * std::abs(radius_x) * std::abs(radius_y);
+	return M_PI * std::abs(width) * std::abs(height);
 }
 
 double Ellipse::perimeter() const
 {
-	double c = pow((radius_x-radius_y), 2);
-	double d = pow((radius_x+radius_y), 2);
-	return M_PI * (radius_x+radius_y) *
+	double c = pow((width-height), 2);
+	double d = pow((width+height), 2);
+	return M_PI * (width+height) *
 		( 3 * ( c / (d * sqrt(-3*c/d+4) + 10) ) + 1 );
 }

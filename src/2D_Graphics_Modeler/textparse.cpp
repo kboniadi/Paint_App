@@ -76,7 +76,7 @@ Shape * parseLine(std::ifstream& in, int shapeid, cs1c::vector<int> &dims) {
     in >> penjoin;
 	QBrush brush(getColor(pencolor));
 	QPen pen(brush, penwidth, getPenStyle(penstyle), getCapStyle(pencap), getJoinStyle(penjoin));
-	return new Line(shapeid, pen, brush, QPoint(dims[0], dims[1]), QPoint(dims[3], dims[4]));
+	return new Line(shapeid, pen, brush, QPoint(dims[0], dims[1]), QPoint(dims[2], dims[3]));
 }
 
 Shape * parsePolyline(std::ifstream& in, int shapeid, cs1c::vector<int> &dims) {
@@ -269,7 +269,7 @@ Shape * parseCircle(std::ifstream& in, int shapeid, cs1c::vector<int> &dims) {
 	QBrush penbrush(getColor(pencolor));
 	QPen pen(penbrush, penwidth, getPenStyle(penstyle), getCapStyle(pencap), getJoinStyle(penjoin));
 
-	return new Ellipse(shapeid, pen, brush, QPoint(dims[0], dims[1]), dims[2], dims[3]);
+	return new Ellipse(shapeid, pen, brush, QPoint(dims[0], dims[1]), dims[2], dims[2]);
 }
 
 Shape * parseText(std::ifstream& in, int shapeid, cs1c::vector<int> &dims) {
@@ -323,6 +323,8 @@ cs1c::vector<Shape *> textParse() {
     std::string shapeType;
     cs1c::vector<int> dims;
     cs1c::vector<Shape*> shapes;
+	Shape* temp;
+	Shape* temp2;
     int shapeIdtemp, dimsTemp;
 	while (true) {
         dims.clear();
@@ -362,9 +364,11 @@ cs1c::vector<Shape *> textParse() {
 			break;
 		case Shape::ShapeType::Ellipse:
 			shapes.push_back(parseEllip(in, shapeIdtemp, dims));
+			temp = shapes[5];
 			break;
 		case Shape::ShapeType::Circle:
 			shapes.push_back(parseCircle(in, shapeIdtemp, dims));
+			temp2 = shapes[6];
 			break;
 		case Shape::ShapeType::Text:
 			shapes.push_back(parseText(in, shapeIdtemp, dims));

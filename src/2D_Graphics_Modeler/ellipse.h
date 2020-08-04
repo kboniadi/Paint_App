@@ -28,19 +28,18 @@ public:
      */
 	explicit Ellipse(id_t id = 0, const QPen &pen = {},
 		const QBrush &brush = {}, const QPoint &point = {}, int x = 0,
-        int y = 0): Rectangle{pen, brush, point, id, x, y} {}
+		int y = 0);
 
     explicit Ellipse(const QRect &rect, id_t id = 0, const QPen &pen = {},
         const QBrush &brush = {}): Rectangle{rect, id, pen, brush} {}
     /*!
      * \brief deallocates any allocated memory
      */
-	~Ellipse() override = default;
+	~Ellipse() override;
     Ellipse(Ellipse&&) noexcept;
     Ellipse& operator=(Ellipse&&) noexcept;
 
 	ShapeType getShape() const override {return Shape::Ellipse;}
-	QRect getRect() const override;
     /*!
      * \brief Draws the Polygon
      * \param (QPaintDevice*) device to interface with painter object
@@ -62,8 +61,8 @@ public:
 private:
 
     QPoint center;
-	int radius_x;
-	int radius_y;
+//	int radius_x;
+//	int radius_y;
 };
 
 #endif // ELLIPSE_H

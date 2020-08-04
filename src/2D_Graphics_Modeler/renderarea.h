@@ -25,7 +25,7 @@ public:
      * @brief Constructor with default parameter set to nullptr
      * @param parent (QWidget*)
      */
-    RenderArea(QWidget *parent = 0);
+	RenderArea(QWidget *parent = nullptr);
 
     //!@ smallest size the render area window can be
     QSize minimumSizeHint() const override;
@@ -68,7 +68,7 @@ public:
 	 * @brief getter for the size of the vector shape_list
 	 * @return (size_t) unsigned int value in compliance with vector class
 	 */
-	size_t getVectLength() {return shapes_list.getLength();}
+	size_t getVectLength() {return shapes_list.size();}
 
 protected:
     /*!

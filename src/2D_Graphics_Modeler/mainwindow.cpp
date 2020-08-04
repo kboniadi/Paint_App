@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
         ui->actionMove
 	};
 	SetAdminRights(false);
-	this->setCentralWidget(renderArea);
+	this->setCentralWidget(ui->renderarea);
 }
 
 MainWindow::~MainWindow()
@@ -74,44 +74,46 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionAdd_Rectangle_triggered()
 {
-    Rectangle *rect = new Rectangle(renderArea->getVectLength() + 1, 6, 0, 2, 2, 2, 2, 10, 20, 200, 200, 100, QString{"Rectangle"});
-	renderArea->addShape(rect);
+	using namespace std::placeholders;
+	connect(this, &MainWindow::onAreaClick, std::bind(&MainWindow::AddRect<Rectangle>, this, _1, _2));
+//    Rectangle *rect = new Rectangle(renderArea->getVectLength() + 1, 6, 0, 2, 2, 2, 2, 10, 20, 200, 200, 100, QString{"Rectangle"});
+//	renderArea->addShape(rect);
 }
 
 void MainWindow::on_actionAdd_Ellipse_triggered()
 {
-    Ellipse *ellipse = new Ellipse(renderArea->getVectLength() + 1, 2, 12, 1, 0, 0, 0, 0, QPoint(520, 300), 170,
-								   100, QString("Ellipse"));
-	renderArea->addShape(ellipse);
+//    Ellipse *ellipse = new Ellipse(renderArea->getVectLength() + 1, 2, 12, 1, 0, 0, 0, 0, QPoint(520, 300), 170,
+//								   100, QString("Ellipse"));
+//	renderArea->addShape(ellipse);
 }
 
 void MainWindow::on_actionAdd_Polygon_triggered()
 {
-    QPoint points[] = {QPoint(900, 190), QPoint(910, 120), QPoint(970, 140),
-                       QPoint(980, 180)};
-	Polygon *polygon = new Polygon(renderArea->getVectLength() + 1, 8, 6, 4, 0, 0, 11, 1, 4, points, QString("Polygon"));
-	renderArea->addShape(polygon);
+//    QPoint points[] = {QPoint(900, 190), QPoint(910, 120), QPoint(970, 140),
+//                       QPoint(980, 180)};
+//	Polygon *polygon = new Polygon(renderArea->getVectLength() + 1, 8, 6, 4, 0, 0, 11, 1, 4, points, QString("Polygon"));
+//	renderArea->addShape(polygon);
 }
 
 void MainWindow::on_actionAdd_Polyline_triggered()
 {
-    QPoint points[] = {QPoint(430, 90), QPoint(440, 20), QPoint(500, 40),
-                       QPoint(510, 80)};
-	Polyline *pLine = new Polyline(renderArea->getVectLength() + 1, 4, 6, 1, 0, 0, 0, 0, 4, points, QString("Polyline"));
-	renderArea->addShape(pLine);
+//    QPoint points[] = {QPoint(430, 90), QPoint(440, 20), QPoint(500, 40),
+//                       QPoint(510, 80)};
+//	Polyline *pLine = new Polyline(renderArea->getVectLength() + 1, 4, 6, 1, 0, 0, 0, 0, 4, points, QString("Polyline"));
+//	renderArea->addShape(pLine);
 }
 
 void MainWindow::on_actionAdd_Line_triggered()
 {
-	Line *line = new Line(renderArea->getVectLength() + 1, 6, 2, 4, 0, 0, 0, 0, QPoint(100, 100), QPoint(150, 200), QString("Line"));
-	renderArea->addShape(line);
+//	Line *line = new Line(renderArea->getVectLength() + 1, 6, 2, 4, 0, 0, 0, 0, QPoint(100, 100), QPoint(150, 200), QString("Line"));
+//	renderArea->addShape(line);
 }
 
 void MainWindow::on_actionAdd_Text_triggered()
 {
-	Text *text = new Text(renderArea->getVectLength() + 1, QString("Class Project"), 6,  4, 10,
-						  QString("Comic Sans MS"), 0, 2, 100, 100, 500, 100, QString("Text"));
-	renderArea->addShape(text);
+//	Text *text = new Text(renderArea->getVectLength() + 1, QString("Class Project"), 6,  4, 10,
+//						  QString("Comic Sans MS"), 0, 2, 100, 100, 500, 100, QString("Text"));
+//	renderArea->addShape(text);
 }
 
 void MainWindow::on_actionDelete_triggered()
@@ -145,6 +147,14 @@ void MainWindow::Move_Signal_Handler(int ID, int x_coord, int y_coord)
 void MainWindow::on_actionLogout_triggered()
 {
 	SetAdminRights(false);
+}
+
+template<class T>
+void MainWindow::AddRect(int x, int y)
+{
+	auto *rect = new T{QRect{x, y, 0, 0}};
+	renderArea->getShapes().push_back(rect);
+	ui->renderarea->update();
 }
 
 void MainWindow::SetAdminRights(bool val)

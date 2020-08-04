@@ -37,6 +37,8 @@ public:
      * \brief sets renderArea's cursor
      */
     void SetDrawCursor(const QCursor&);
+signals:
+	void onAreaClick(int x, int y);
 public slots:
     /*!
      * \brief deletes a Shape from renderArea by ID
@@ -127,6 +129,8 @@ private slots:
     void on_actionMove_triggered();
 
 private:
+	template<class T>
+	void AddRect(int x, int y);
 	/*!
 	 * @brief activates or deactivates the setEnabled() functions in
 	 * actionLogin or action logout

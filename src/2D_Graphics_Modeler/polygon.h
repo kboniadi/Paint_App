@@ -4,14 +4,14 @@
 #include <math.h>
 #include <QPoint>
 #include "polyline.h"
-
+#include <algorithm>
+#include <utility>
 /*!
   \class Polygon: inherits Shape
  * \brief This class represents a Polygon object. It manages 2 attribute.
  */
 class Polygon: public Polyline {
 public:
-
 	/*!
 	 * \brief initializes data pertaining to Polygon and shape
 	 * \param color of the pen
@@ -25,18 +25,17 @@ public:
 	 * \param points pointer to QPoint data
 	 */
 	explicit Polygon(const id_t id = 0, const QPen& pen = {},
-		const QBrush& brush = {}, cs1c::vector<QPoint> points = {})
-		: Polyline{id, pen, brush, std::move(points)} {}
+		const QBrush& brush = {}, cs1c::vector<QPoint> points = {});
 
 	/*!
 	 * \brief deallocates any allocated memory
 	 */
-	~Polygon() override = default;
+	~Polygon() override;
     Polygon(Polygon&&) noexcept;
     Polygon& operator=(Polygon&&) noexcept;
 
 	ShapeType getShape() const override {return Shape::Polygon;}
-	QRect getRect() const override;
+//	QRect getRect() const override;
 	/*!
 	 * \brief Draws the Polygon
 	 * \param (QPaintDevice*) device to interface with painter object

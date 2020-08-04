@@ -1,5 +1,10 @@
 #include "polygon.h"
 
+Polygon::Polygon(const Shape::id_t id, const QPen &pen, const QBrush &brush, cs1c::vector<QPoint> points)
+	: Polyline{id, pen, brush, std::move(points)} {}
+
+Polygon::~Polygon() = default;
+
 Polygon::Polygon(Polygon &&other) noexcept
     : Polyline{(id_t) -1}
 {

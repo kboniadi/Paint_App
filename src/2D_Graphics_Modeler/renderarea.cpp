@@ -6,10 +6,6 @@ RenderArea::RenderArea(QWidget *parent)
     //sets the background to white
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
-    //parse shapes.txt
-    //assign it to a variable
-    //assignShapeID
-    //update();
 	shapes_list = textParse();
     update();
 }
@@ -29,25 +25,22 @@ void RenderArea::paintEvent(QPaintEvent */*event*/)
 {
     //initialize variables for specific shapes
     //e.g. QPoints for a polygon
-
 	for (auto it = shapes_list.begin(); it != shapes_list.end(); ++it) {
 		(*it)->draw(this);
-    }
+	}
 	update();
 	//save
     //restore
-
-
 }
 
 RenderArea::~RenderArea()
 {
     //save shapes
     //delete shapes in vector
-
-	for (auto it = shapes_list.begin(); it != shapes_list.end(); ++it) {
-        delete (*it);
-    }
+	shapes_list.clear();
+//	for (auto it = shapes_list.begin(); it != shapes_list.end(); ++it) {
+//        delete (*it);
+//    }
 }
 
 void RenderArea::addShape(Shape *shape)

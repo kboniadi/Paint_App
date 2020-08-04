@@ -1,7 +1,7 @@
-//#include <QApplication>
-//#include "mainwindow.h"
+#include <QApplication>
+#include "mainwindow.h"
 
-#define TEST
+//#define TEST
 
 #ifndef TEST
 int main(int argc, char *argv[])
