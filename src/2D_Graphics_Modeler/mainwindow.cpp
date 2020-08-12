@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-//#include "renderarea.h"
+
+#include "about.h"
 #include "rectangle.h"
 #include "ellipse.h"
 #include "polygon.h"
@@ -47,10 +48,11 @@ MainWindow::MainWindow(QWidget *parent)
 		ui->actionCopy,
         ui->actionPaste,
 		ui->actionMove,
-		ui->prop_tree
+		ui->prop_tree,
+		ui->shapeList
 	};
 
-	SetAdminRights(true);
+	SetAdminRights(false);
 
 	storage.shapes = textParse();
 	ui->renderarea->setStorage(&storage.shapes);
@@ -125,9 +127,9 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    About *about = new About(this);
+	About *about = new About(this);
 	about->setWindowTitle(tr("Meet the Team"));
-    about->show();
+	about->show();
 }
 
 void MainWindow::on_actionAdd_Rectangle_triggered()

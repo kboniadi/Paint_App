@@ -39,7 +39,6 @@ public:
     void SetDrawCursor(const QCursor&);
 signals:
 	void onCanvasClick(int x, int y);
-	void onCanvasDrag(int x, int y);
 protected:
     /*!
      * \brief accpets the close event

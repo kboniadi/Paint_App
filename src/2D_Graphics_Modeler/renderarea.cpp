@@ -71,12 +71,3 @@ void RenderArea::mousePressEvent(QMouseEvent *event)
 		dynamic_cast<MainWindow*>(window())->onCanvasClick(event->x(), event->y());
 	}
 }
-
-void RenderArea::mouseMoveEvent(QMouseEvent *event)
-{
-	if (event->button() & Qt::LeftButton) {
-		dynamic_cast<MainWindow*>(window())->onCanvasDrag(event->x(), event->y());
-	}
-}
-
-
