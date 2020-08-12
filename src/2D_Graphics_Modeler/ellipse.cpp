@@ -27,6 +27,7 @@ void Ellipse::draw(QPaintDevice *device)
 	getPainter().begin(device);
 	getPainter().setPen(getPen());
 	getPainter().setBrush(getBrush());
+	getPainter().translate(getPos());
 
 	QRect rect = getRect();
 	rect.moveCenter(QPoint{});

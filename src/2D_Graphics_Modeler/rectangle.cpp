@@ -1,7 +1,7 @@
 #include "rectangle.h"
 
 Rectangle::Rectangle(Rectangle &&move) noexcept
-	: Shape{(id_t) -1}, width{0}, height{0}
+	: Shape{QPoint{}, (id_t) -1}, width{0}, height{0}
 {
 	swap(move);
 	std::swap(width, move.width);
@@ -33,13 +33,13 @@ Rectangle& Rectangle::operator=(Rectangle &&rhs) noexcept
 QRect Rectangle::getRect() const
 {
 	QRect rect{0, 0, width, height};
-	rect.moveCenter(getPosition());
+	rect.moveCenter(getPos());
 	return rect;
 }
 
 void Rectangle::setRect(const QRect &rect)
 {
-	setPosition(rect.center());
+	setPos(rect.center());
 	width = rect.width();
 	height = rect.height();
 }
@@ -50,6 +50,7 @@ void Rectangle::draw(QPaintDevice *device)
 	getPainter().begin(device);
 	getPainter().setPen(getPen());
 	getPainter().setBrush(getBrush());
+	getPainter().translate(getPos());
 
 	QRect rect = getRect();
 	rect.moveCenter(QPoint{});

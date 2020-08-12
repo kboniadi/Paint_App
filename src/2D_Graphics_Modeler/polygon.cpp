@@ -1,12 +1,12 @@
 #include "polygon.h"
 
-Polygon::Polygon(const Shape::id_t id, const QPen &pen, const QBrush &brush, cs1c::vector<QPoint> points)
-	: Polyline{id, pen, brush, std::move(points)} {}
+Polygon::Polygon(std::vector<QPoint> points, const Shape::id_t id, const QPen &pen, const QBrush &brush)
+	: Polyline{std::move(points), id, pen, brush} {}
 
 Polygon::~Polygon() = default;
 
 Polygon::Polygon(Polygon &&other) noexcept
-    : Polyline{(id_t) -1}
+	: Polyline{{QPoint{}}, (id_t) -1}
 {
     swap(other);
     std::swap(points, other.points);
@@ -25,7 +25,8 @@ void Polygon::draw(QPaintDevice *device)
 	getPainter().begin(device);
 	getPainter().setPen(getPen());
 	getPainter().setBrush(getBrush());
-	getPainter().drawConvexPolygon(&(*points.begin()), points.size());
+	getPainter().translate(getPos());
+	getPainter().drawPolygon(points.data(), points.size());
 	getPainter().end();
 }
 

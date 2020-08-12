@@ -24,8 +24,8 @@ public:
 	 * \param verts number of vertices
 	 * \param points pointer to QPoint data
 	 */
-	explicit Polygon(const id_t id = 0, const QPen& pen = {},
-		const QBrush& brush = {}, cs1c::vector<QPoint> points = {});
+	Polygon(std::vector<QPoint> points = {}, const id_t id = 0,
+		const QPen& pen = {}, const QBrush& brush = {});
 
 	/*!
 	 * \brief deallocates any allocated memory

@@ -258,11 +258,13 @@ public:
 // end of class declaration
 template<class T>
 typename vector<T>::iterator vector<T>::erase(iterator pos) {
-    if (pos == end())
+	if (pos == end()) {
         return pos;
-    for (auto it = pos + 1; it != end(); ++it)
+	}
+	for (auto it = pos + 1; it != end(); ++it) {
         *(it - 1) = *it;
-    *(end() - 1) = 0;
+	}
+	*(end() - 1) = T{};
 	size_--;
     return pos;
 }
@@ -288,8 +290,9 @@ typename vector<T>::iterator vector<T>::insert(iterator it, const T& val) {
 		reserve(2 * capacity_);
         it = begin()+offset;
     }
-    for (auto i = end(); i != it; --i)
-        *i = *(i - 1);
+	for (auto i = end(); i != it; --i) {
+		*i = *(i - 1);
+	}
 	++size_;
     *it = val;
     return it;

@@ -30,21 +30,19 @@ public:
      * \param ending poing
     */
 
-	explicit Line(const id_t id = 0, const QPen& pen = {},
-        const QBrush& brush = {}, const QPoint& pos_A = {},
-        const QPoint& pos_B = {})
-		: Shape{id, pen, brush, QPoint{}}, startPoint{pos_A}, endPoint{pos_B} {}
+	explicit Line(const QPoint& pos_A = {}, const QPoint& pos_B = {},
+		id_t id = 0, const QPen& pen = {}, const QBrush& brush = {});
 
     Line(Line&&) noexcept;
     Line& operator=(Line&&) noexcept;
 
-    void setStart(const QPoint &otherstart) {startPoint = otherstart;}
-    void setEnd(const QPoint &otherend) {endPoint = otherend;}
+	void setStart(const QPoint &otherstart);
+	void setEnd(const QPoint &otherend);
 
 	QRect getRect() const override;
 	ShapeType getShape() const override {return Shape::Line;}
-    QPoint getStart() const {return startPoint;}
-    QPoint getEnd() const {return endPoint;}
+	QPoint getStart() const {return startPoint + getPos();}
+	QPoint getEnd() const {return endPoint + getPos();}
     /*!
      * \brief calculates the area of line
      * \return 0

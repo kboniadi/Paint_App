@@ -59,55 +59,55 @@ Shape::ShapeType getShapeType(std::string key);
 * \param shapeid is the parsed shape id
 * \param dims is the vector of dimensions used to create the object
 */
-Shape * parseLine(std::ifstream& in, int shapeid, cs1c::vector<int> &dims);
+Shape * parseLine(std::ifstream& in, int shapeid, std::vector<int> &dims);
 /*!
 * \brief fcreates a line object from the values parsed
 * \param in is ifstream object
 * \param shapeid is the parsed shape id
 * \param dims is the vector of dimensions used to create the object
 */
-Shape * parsePolyline(std::ifstream& in, int shapeid, cs1c::vector<int> &dims);
+Shape * parsePolyline(std::ifstream& in, int shapeid, std::vector<int> &dims);
 /*!
 * \brief fcreates a Polyline object from the values parsed
 * \param in is ifstream object
 * \param shapeid is the parsed shape id
 * \param dims is the vector of dimensions used to create the object
 */
-Shape * parsePolygon(std::ifstream& in, int shapeid, cs1c::vector<int> &dims);
+Shape * parsePolygon(std::ifstream& in, int shapeid, std::vector<int> &dims);
 /*!
 * \brief fcreates a polygon object from the values parsed
 * \param in is ifstream object
 * \param shapeid is the parsed shape id
 * \param dims is the vector of dimensions used to create the object
 */
-Shape * parseRectangle(std::ifstream& in, int shapeid, cs1c::vector<int> &dims);
+Shape * parseRectangle(std::ifstream& in, int shapeid, std::vector<int> &dims);
 /*!
 * \brief fcreates a Rectangle object from the values parsed
 * \param in is ifstream object
 * \param shapeid is the parsed shape id
 * \param dims is the vector of dimensions used to create the object
 */
-Shape * parseSquare(std::ifstream& in, int shapeid, cs1c::vector<int> &dims);
+Shape * parseSquare(std::ifstream& in, int shapeid, std::vector<int> &dims);
 /*!
 * \brief fcreates a Square object from the values parsed
 * \param in is ifstream object
 * \param shapeid is the parsed shape id
 * \param dims is the vector of dimensions used to create the object
 */
-Shape * parseEllip(std::ifstream& in, int shapeid, cs1c::vector<int> &dims);
+Shape * parseEllip(std::ifstream& in, int shapeid, std::vector<int> &dims);
 /*!
 * \brief fcreates a ellipse object from the values parsed
 * \param in is ifstream object
 * \param shapeid is the parsed shape id
 * \param dims is the vector of dimensions used to create the object
 */
-Shape * parseCircle(std::ifstream& in, int shapeid, cs1c::vector<int> &dims);
+Shape * parseCircle(std::ifstream& in, int shapeid, std::vector<int> &dims);
 /*!
 * \brief fcreates a text object from the values parsed
 * \param in is ifstream object
 * \param shapeid is the parsed shape id
 * \param dims is the vector of dimensions used to create the object
 */
-Shape * parseText(std::ifstream& in, int shapeid, cs1c::vector<int> &dims);
+Shape * parseText(std::ifstream& in, int shapeid, std::vector<int> &dims);
 
 #endif // TEXTPARSE_H

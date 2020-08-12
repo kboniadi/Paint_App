@@ -22,7 +22,7 @@ const QMap<QFont::Weight, QString> FONT_WEIGHTS {
 	{QFont::Bold, "Bold"}
 };
 
-Text::Text(Text &&other) noexcept: Shape{(id_t) -1}
+Text::Text(Text &&other) noexcept: Shape{QPoint{}, (id_t) -1}
 {
 	swap(other);
 	std::swap(font, other.font);
@@ -46,7 +46,7 @@ Text &Text::operator=(Text &&other) noexcept
 
 void Text::setRect(const QRect &rect)
 {
-	setPosition(rect.center());
+	setPos(rect.center());
 	width = rect.width();
 	height = rect.height();
 }
@@ -54,11 +54,11 @@ void Text::setRect(const QRect &rect)
 QRect Text::getRect() const
 {
 	QFontMetrics fontdeets{font};
-	QSize size{(width < 0) ? (int)(fontdeets.horizontalAdvance(text) * 1.1): width,
-	(height < 0) ? (int)(fontdeets.height() * 1.1): height};
+	QSize size{((width < 0) ? (int)(fontdeets.horizontalAdvance(text) * 1.1): width),
+	((height < 0) ? (int)(fontdeets.height() * 1.1): height)};
 
 	QRect rect{QPoint{}, size};
-	rect.moveCenter(getPosition());
+	rect.moveCenter(getPos());
 	return rect;
 }
 
@@ -67,10 +67,12 @@ void Text::draw(QPaintDevice *device)
 	getPainter().begin(device);
 	getPainter().setPen(getPen());
 	getPainter().setFont(getFont());
+	getPainter().translate(getPos());
 
 	QRect rect = getRect();
 	rect.moveCenter(QPoint{});
 
+	getPainter().setFont(font);
 	getPainter().drawText(rect, alignment, text);
 	getPainter().end();
 }

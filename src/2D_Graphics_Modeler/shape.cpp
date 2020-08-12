@@ -3,16 +3,25 @@
 
 static unsigned int shapeid = 0;
 
-const QMap<Qt::GlobalColor, QString> COLOR_NAMES {
-	{Qt::white, "white"},
-	{Qt::black, "black"},
-	{Qt::red, "red"},
-	{Qt::green, "green"},
-	{Qt::blue, "blue"},
-	{Qt::cyan, "cyan"},
-	{Qt::magenta, "magenta"},
-	{Qt::yellow, "yellow"},
-	{Qt::gray, "gray"}
+const QMap<Shape::ShapeType, QString> SHAPE_NAMES {
+	{Shape::Line, "Line"},
+	{Shape::Polyline, "Polyline"},
+	{Shape::Polygon, "Polygon"},
+	{Shape::Rectangle, "Rectangle"},
+	{Shape::Ellipse, "Ellipse"},
+	{Shape::Text, "Text"}
+};
+
+const QMap<QString, QColor> COLOR_NAMES {
+	{"white", QColor{Qt::white}},
+	{"black", QColor{Qt::black}},
+	{"red", QColor{Qt::red}},
+	{"green", QColor{Qt::green}},
+	{"blue", QColor{Qt::blue}},
+	{"cyan", QColor{Qt::cyan}},
+	{"magenta", QColor{Qt::magenta}},
+	{"yellow", QColor{Qt::yellow}},
+	{"gray", QColor{Qt::gray}}
 };
 
 const QMap<Qt::PenStyle, QString> STYLE_NAMES {
@@ -45,11 +54,11 @@ const QMap<Qt::BrushStyle, QString> BSTYLE_NAMES {
 	{Qt::VerPattern, "VerPattern"}
 };
 
-Shape::Shape(id_t id, const QPen &pen, const QBrush &brush, const QPoint &pos)
-	: id{id}, pen{std::move(pen)}, brush{brush}, position{pos}
+Shape::Shape(const QPoint& pos, id_t id, const QPen& pen, const QBrush& brush)
+	: position{pos}, id{id}, pen{std::move(pen)}, brush{brush}
 {
 	if (id == 0)
-		id = ++shapeid;
+		this->id = ++shapeid;
 	else if (id != (id_t) -1 && id > shapeid)
 		shapeid = id;
 }
@@ -58,6 +67,13 @@ void Shape::move(int dx, int dy)
 {
 	position.rx() += dx;
 	position.ry() += dy;
+}
+
+bool Shape::hasfill(Shape::ShapeType type)
+{
+	return    type != Line
+		   && type != Polyline
+		   && type != Text;
 }
 
 void Shape::swap(Shape &other) noexcept

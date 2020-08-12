@@ -1,9 +1,10 @@
 #ifndef POLYLINE_H
 #define POLYLINE_H
 
+#include <vector>
 #include <math.h>
 #include "shape.h"
-#include "vector.h"
+//#include "vector.h"
 
 /*!
   \class Polyline: inherits Shape
@@ -24,8 +25,8 @@ public:
      * \param verts number of vertices
      * \param points pointer to QPoint data
      */
-	explicit Polyline(const id_t id = 0, const QPen& pen = {},
-		const QBrush& brush = {}, cs1c::vector<QPoint> points = {});
+	explicit Polyline(std::vector<QPoint> points = {}, id_t id = 0, const QPen& pen = {},
+		const QBrush& brush = {});
     /*!
      * \brief deallocates any allocated memory
      */
@@ -35,7 +36,41 @@ public:
 
 	ShapeType getShape() const override {return Shape::Polyline;}
 	QRect getRect() const override;
-    std::size_t getSize() const {return points.size();}
+
+	std::size_t getSize() const {return points.size();}
+	QPoint getPoint(std::size_t i) const
+	{ return points[i] + getPos(); }
+
+	void setPoint(std::size_t i, const QPoint &point)
+	{
+		points[i] = point - getPos();
+		setCenter();
+	}
+
+	void insert(std::size_t before, const QPoint &point)
+	{
+		points.insert(points.begin() + before, point - getPos());
+		setCenter();
+	}
+
+	void pushPoint(const QPoint &point)
+	{
+		points.push_back(point - getPos());
+		setCenter();
+	}
+
+	void erase(std::size_t i)
+	{
+		points.erase(points.begin() + i);
+		setCenter();
+	}
+
+	void clearPoints()
+	{
+		points.clear();
+		setCenter();
+	}
+
 
     /*!
      * \brief Draws the Polyline
@@ -56,7 +91,7 @@ public:
     inline double perimeter() const override {return -1;}
 protected:
 	void setCenter();
-	cs1c::vector<QPoint> points;
+	std::vector<QPoint> points;
 };
 
 #endif // POLYLINE_H

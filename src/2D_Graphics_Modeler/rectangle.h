@@ -4,12 +4,12 @@
 #include <math.h>
 #include <QPoint>
 #include "shape.h"
-
+#include <QGraphicsItem>
 /*!
   \class Rectangle: inherits Shape
  * \brief This class represents a Rectangle object. It manages 4 attribute.
  */
-class Rectangle: public Shape{
+class Rectangle: public Shape/*, QGraphicsItem*/{
 public:
     /*!
      * \brief initializes data pertaining to Rectangle and shape
@@ -27,11 +27,11 @@ public:
     */
     explicit Rectangle(const QPen &pen = {}, const QBrush &brush = {},
 		const QPoint &point = {}, id_t id = 0, int aWidth = 0, int aHeight = 0)
-		: Shape{id, pen, brush, point}, width{aWidth}, height{aHeight} {}
+		: Shape{point, id, pen, brush}, width{aWidth}, height{aHeight} {}
 
 	explicit Rectangle(const QRect &rect, id_t id = 0, const QPen &pen = {},
 		const QBrush &brush = {})
-		: Shape{id, pen, brush, rect.center()}, width{rect.width()},
+		: Shape{rect.center(), id, pen, brush}, width{rect.width()},
 		height{rect.height()} {}
     /*!
      * \brief deallocates any allocated memory
@@ -69,7 +69,7 @@ public:
      */
     double perimeter() const override;
 protected:
-    explicit Rectangle(id_t id): Shape{id}, width{0}, height{0} {}
+	explicit Rectangle(id_t id): Shape{QPoint{}, id}, width{0}, height{0} {}
 	int width{0};
 	int height{0};
 };

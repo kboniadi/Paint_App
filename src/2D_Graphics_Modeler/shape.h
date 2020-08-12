@@ -5,12 +5,6 @@
 #include <QPaintDevice>
 #include <assert.h>
 
-extern const QMap<Qt::GlobalColor, QString> COLOR_NAMES;
-extern const QMap<Qt::PenStyle, QString> STYLE_NAMES;
-extern const QMap<Qt::PenCapStyle, QString> CAP_NAMES;
-extern const QMap<Qt::PenJoinStyle, QString> JOIN_NAMES;
-extern const QMap<Qt::BrushStyle, QString> BSTYLE_NAMES;
-
 /*!
  * @class Shape
  * @brief This class represents a Shape object. It manages 5 attribute.
@@ -46,8 +40,8 @@ public:
 	 * \param color of the brush
 	 * \param style of the brush
 	 */
-	explicit Shape(const id_t id = 0, const QPen& pen = {},
-		const QBrush& brush = {}, const QPoint& pos = {});
+	explicit Shape(const QPoint& pos = {}, id_t id = 0, const QPen& pen = {},
+		const QBrush& brush = {});
 
 	/*!
 	 * \brief deallocates any allocated memory
@@ -73,13 +67,13 @@ public:
 	void setPen(const QPen &pen) {this->pen = pen;}
 	void setBrush(const QBrush &brush) {this->brush = brush;}
 
-	void setPosition(int x, int y)
+	void setPos(int x, int y)
 	{
 		position.setX(x);
 		position.setY(y);
 	}
 
-	void setPosition(const QPoint& pos) {position = pos;}
+	void setPos(const QPoint& pos) {position = pos;}
 
 	/*!
 	 * \brief gets the id for the shape
@@ -99,7 +93,7 @@ public:
 	 */
 	const QBrush& getBrush() const {return brush;}
 
-	const QPoint& getPosition() const {return position;}
+	const QPoint& getPos() const {return position;}
 
 	/*!
 	 * \brief moves the shape or parts of shapes
@@ -132,6 +126,7 @@ public:
 	 * \return (double) perimeter of a specific shape
 	 */
 	virtual double perimeter() const = 0;
+	static bool hasfill(ShapeType);
 protected:
 	void swap(Shape&) noexcept;
 	/*!
@@ -141,10 +136,17 @@ protected:
 	QPainter& getPainter() {return painter;}
 private:
 	QPainter painter;
-	id_t id;
+	QPoint position;
+	id_t id{0};
 	QPen pen;
 	QBrush brush;
-	QPoint position;
 };
+
+extern const QMap<Shape::ShapeType, QString> SHAPE_NAMES;
+extern const QMap<QString, QColor> COLOR_NAMES;
+extern const QMap<Qt::PenStyle, QString> STYLE_NAMES;
+extern const QMap<Qt::PenCapStyle, QString> CAP_NAMES;
+extern const QMap<Qt::PenJoinStyle, QString> JOIN_NAMES;
+extern const QMap<Qt::BrushStyle, QString> BSTYLE_NAMES;
 
 #endif // SHAPE_H

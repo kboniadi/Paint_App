@@ -33,7 +33,7 @@ public:
 		const QPoint &point = {}, id_t id = 0, const QFont &font = {},
 		const QString &str = "", Qt::AlignmentFlag flag = Qt::AlignCenter,
 		int width = -1, int height = -1)
-		: Shape{id, pen, brush, point}, font{font}, text{str}, alignment{flag},
+		: Shape{point, id, pen, brush}, font{font}, text{str}, alignment{flag},
 		  width{width}, height{height} {}
 
     /*!

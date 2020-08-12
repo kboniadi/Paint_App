@@ -1,17 +1,15 @@
 #ifndef RENDERAREA_H
 #define RENDERAREA_H
 
-#include <QPainter>
-#include <QPainterPath>
-#include <QMessageBox>
-#include <QBrush>
-#include <QPen>
-#include <QPixmap>
+//#include <QPainter>
+//#include <QPainterPath>
+//#include <QMessageBox>
+//#include <QBrush>
+//#include <QPen>
+//#include <QPixmap>
 #include <QWidget>
-#include "shape.h"
-#include "vector.h"
+#include "storage.h"
 #include "textparse.h"
-#include "text.h"
 
 /*!
  * @class RenderArea
@@ -20,6 +18,7 @@
  */
 class RenderArea : public QWidget
 {
+	Q_OBJECT
 public:
     /*!
      * @brief Constructor with default parameter set to nullptr
@@ -28,48 +27,36 @@ public:
 	RenderArea(QWidget *parent = nullptr);
 
     //!@ smallest size the render area window can be
-    QSize minimumSizeHint() const override;
+//    QSize minimumSizeHint() const override;
 
     //!@ size of render area when it opens
-    QSize sizeHint() const override;
+//    QSize sizeHint() const override;
 
     /*!
      * @brief Destructor deallocates memory
      */
-    ~RenderArea();
 
+	void setStorage(cs1c::vector<Shape*>*);
     /*!
      * \brief Add a shape to shapes_list vector and invoke update()
      * \param shape (Shape*) pointer that is added to the vector
      */
     void addShape(Shape *shape);
 
-    /*!
-     * \brief Remove a shape from shapes_list vector and invoke update()
-     * \param ID of the shape
-     */
-	void deleteShape(int ID);
-
-    /*!
-     * \brief move a shape
-     * \param ID of the shape
-     * \param x_coord of the point to move to
-     * \param y_coord of the point to move to
-     */
-    void moveShape(int ID, int x_coord, int y_coord);
-
 	/*!
 	 * @brief getter for shapes_list vector
 	 * @return (vector<Shape*>) vector of Shape pointers
 	 */
-	cs1c::vector<Shape*> getShapes() {return shapes_list;}
+	cs1c::vector<Shape*> getShapes() {return *shapes;}
 
 	/*!
 	 * @brief getter for the size of the vector shape_list
 	 * @return (size_t) unsigned int value in compliance with vector class
 	 */
-	size_t getVectLength() {return shapes_list.size();}
+	size_t getVectSize() {return shapes->size();}
+public slots:
 
+	 void setSelected(int);
 protected:
     /*!
      * @brief paintEvent is called when repaint() or update() are invoked.
@@ -77,9 +64,12 @@ protected:
      * @param event (QPaintEvent*) unused parameter. Necessary for override.
      */
     void paintEvent(QPaintEvent *event) override;
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
 private:
-    //member variables
-	cs1c::vector<Shape*> shapes_list;
+	cs1c::vector<Shape*>* shapes;
+	const QImage target;
+	int selected;
 };
 
 #endif // RENDERAREA_H

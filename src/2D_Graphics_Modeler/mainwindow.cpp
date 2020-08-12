@@ -1,23 +1,37 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "renderarea.h"
+//#include "renderarea.h"
 #include "rectangle.h"
 #include "ellipse.h"
 #include "polygon.h"
 #include "polyline.h"
 #include "line.h"
 #include "text.h"
+#include "shapepropdelegate.h"
+#include "proptree.h"
+#include "itembutton.h"
+
 //need this for QGridLayout
 #include <QtWidgets>
 #include <QComboBox>
 #include <QObject>
 
+#include <QAction>
+#include <QCloseEvent>
+#include <QComboBox>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QStatusBar>
+
+#include <fstream>
+#include <sstream>
+#include <QDebug>
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //add "renderArea" as a member field in "mainwindow.h"
-	renderArea = new RenderArea;
 	setWindowTitle(tr("Chameleon Painter"));
 	adminFeats = {
 		ui->actionAdd_Ellipse,
@@ -32,15 +46,29 @@ MainWindow::MainWindow(QWidget *parent)
 		ui->actionNew,
 		ui->actionCopy,
         ui->actionPaste,
-        ui->actionMove
+		ui->actionMove,
+		ui->prop_tree
 	};
-	SetAdminRights(false);
+
+	SetAdminRights(true);
+
+	storage.shapes = textParse();
+	ui->renderarea->setStorage(&storage.shapes);
+
+	ui->shapeList->setModel(&storage.model);
+	ui->shapeList->setEnabled(storage.shapes.size());
+
+	ui->prop_tree->setHeaderLabels({"Property", "Value"});
+	ui->prop_tree->setItemDelegate(new ShapePropDelegate());
+	ui->prop_tree->setEditTriggers(QAbstractItemView::AllEditTriggers);
+	modified = false;
 	this->setCentralWidget(ui->renderarea);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+	delete ui->prop_tree->itemDelegate();
+	delete ui;
 }
 
 void MainWindow::SetDrawCursor(const QCursor &cursor)
@@ -50,7 +78,37 @@ void MainWindow::SetDrawCursor(const QCursor &cursor)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	event->accept();
+	if (!modified)
+		event->accept();
+}
+
+void MainWindow::on_shapeList_currentIndexChanged(int index)
+{
+	disconnect(ui->prop_tree, &QTreeWidget::itemChanged, nullptr, nullptr);
+	QTreeWidgetItem* old = ui->prop_tree->topLevelItem(0);
+	if (old) {
+		ui->prop_tree->removeItemWidget(old, 0);
+		delete old;
+	}
+
+	if (index < (int) storage.shapes.size()) {
+		Shape* s = storage.shapes[index];
+		new PropertyItem<Shape>(ui->prop_tree->invisibleRootItem(), *s);
+		ui->prop_tree->expandAll();
+	}
+
+	ui->renderarea->setSelected(index);
+	ui->prop_tree->update();
+
+	connect(ui->prop_tree, &QTreeWidget::itemChanged, this, &MainWindow::onDataChanged);
+}
+
+void MainWindow::onDataChanged()
+{
+	ui->renderarea->update();
+	modified = true;
+	ui->shapeList->setEnabled(storage.shapes.size());
+//	this->setWindowTitle(QString("%1*").arg("Chameleon Painter"));
 }
 
 void MainWindow::on_actionLogin_triggered()
@@ -74,74 +132,147 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionAdd_Rectangle_triggered()
 {
+	Disconnect();
+	SetDrawCursor(Qt::CrossCursor);
 	using namespace std::placeholders;
-	connect(this, &MainWindow::onAreaClick, std::bind(&MainWindow::AddRect<Rectangle>, this, _1, _2));
-//    Rectangle *rect = new Rectangle(renderArea->getVectLength() + 1, 6, 0, 2, 2, 2, 2, 10, 20, 200, 200, 100, QString{"Rectangle"});
-//	renderArea->addShape(rect);
+	connect(this, &MainWindow::onCanvasClick, std::bind(&MainWindow::AddRect<Rectangle>, this, _1, _2));
 }
 
 void MainWindow::on_actionAdd_Ellipse_triggered()
 {
-//    Ellipse *ellipse = new Ellipse(renderArea->getVectLength() + 1, 2, 12, 1, 0, 0, 0, 0, QPoint(520, 300), 170,
-//								   100, QString("Ellipse"));
-//	renderArea->addShape(ellipse);
+	Disconnect();
+	SetDrawCursor(Qt::CrossCursor);
+
+	using namespace std::placeholders;
+	connect(this, &MainWindow::onCanvasClick, std::bind(&MainWindow::AddRect<Ellipse>, this, _1, _2));
 }
 
 void MainWindow::on_actionAdd_Polygon_triggered()
 {
-//    QPoint points[] = {QPoint(900, 190), QPoint(910, 120), QPoint(970, 140),
-//                       QPoint(980, 180)};
-//	Polygon *polygon = new Polygon(renderArea->getVectLength() + 1, 8, 6, 4, 0, 0, 11, 1, 4, points, QString("Polygon"));
-//	renderArea->addShape(polygon);
+	Disconnect();
+	SetDrawCursor(Qt::CrossCursor);
+//	SetStatusText("Click the first point for the polygon");
+
+	connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
+		Disconnect();
+		auto* poly = new Polygon{{QPoint{x, y}}};
+		storage.shapes.push_back(poly);
+		storage.model.itemsChanged();
+		onDataChanged();
+
+		ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
+
+//		Use existing point adding logic
+		auto* item = ui->prop_tree->topLevelItem(0)->child(3)->child(0);
+		auto* propitem = dynamic_cast<PropertyItem<QList<QPoint>>*>(item);
+		propitem->add();
+	});
 }
 
 void MainWindow::on_actionAdd_Polyline_triggered()
 {
-//    QPoint points[] = {QPoint(430, 90), QPoint(440, 20), QPoint(500, 40),
-//                       QPoint(510, 80)};
-//	Polyline *pLine = new Polyline(renderArea->getVectLength() + 1, 4, 6, 1, 0, 0, 0, 0, 4, points, QString("Polyline"));
-//	renderArea->addShape(pLine);
+	Disconnect();
+	SetDrawCursor(Qt::CrossCursor);
+//	SetStatusText("Click the first point for the polygon");
+
+	connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
+		Disconnect();
+		auto* poly = new Polyline{{QPoint{x, y}}};
+		storage.shapes.push_back(poly);
+		storage.model.itemsChanged();
+		onDataChanged();
+
+		ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
+
+		// Use existing point adding logic
+		auto* item = ui->prop_tree->topLevelItem(0)->child(2)->child(0);
+		auto* propitem = dynamic_cast<PropertyItem<QList<QPoint>>*>(item);
+		propitem->add();
+	});
 }
 
 void MainWindow::on_actionAdd_Line_triggered()
 {
-//	Line *line = new Line(renderArea->getVectLength() + 1, 6, 2, 4, 0, 0, 0, 0, QPoint(100, 100), QPoint(150, 200), QString("Line"));
-//	renderArea->addShape(line);
+	Disconnect();
+	SetDrawCursor(Qt::CrossCursor);
+//	SetStatusText("Click the starting point for the line");
+
+	connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
+		auto* line = new Line{QPoint{x, y}, QPoint{x, y}};
+		storage.shapes.push_back(line);
+		storage.model.itemsChanged();
+		onDataChanged();
+
+		ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
+
+		disconnect(this, &MainWindow::onCanvasClick, nullptr, nullptr);
+//		SetStatusText("Click the ending point for the line");
+		connect(this, &MainWindow::onCanvasClick, [this, line](int x, int y) {
+			Disconnect();
+
+			line->setEnd(QPoint{x, y});
+			onDataChanged();
+		});
+	});
 }
 
 void MainWindow::on_actionAdd_Text_triggered()
 {
-//	Text *text = new Text(renderArea->getVectLength() + 1, QString("Class Project"), 6,  4, 10,
-//						  QString("Comic Sans MS"), 0, 2, 100, 100, 500, 100, QString("Text"));
-//	renderArea->addShape(text);
+	Disconnect();
+	SetDrawCursor(Qt::CrossCursor);
+//	SetStatusText("Click to add a text box");
+
+	connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
+		Disconnect();
+		storage.shapes.push_back(new Text{QPen{}, QBrush{}, QPoint{x, y}, 0, QFont{}, "", Qt::AlignCenter, -1, -1});
+		storage.model.itemsChanged();
+		onDataChanged();
+
+		ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
+
+		auto* item = ui->prop_tree->topLevelItem(0)->child(1)->child(0);
+		ui->prop_tree->setCurrentItem(item);
+		ui->prop_tree->editItem(item, 1);
+	});
 }
 
 void MainWindow::on_actionDelete_triggered()
 {
-	int numShapes = renderArea->getShapes().size();
-    Delete *del = new Delete(numShapes, this);
-    QObject::connect(del, &Delete::ID_Delete_Signal, this,
-                     &MainWindow::ID_Delete_Signal_Handler);
-    del->show();
-}
+	int numShapes = ui->shapeList->currentIndex();
+	auto it = storage.shapes.begin();
+	for (int i = 0; i < numShapes; i++) {
+		++it;
+	}
+	delete *it;
 
-void MainWindow::ID_Delete_Signal_Handler(int ID)
-{
-	renderArea->deleteShape(ID);
+	storage.shapes.erase(it);
+	storage.model.itemsChanged();
+	onDataChanged();
+
+	if (storage.shapes.size() == 0) {
+		on_shapeList_currentIndexChanged(0);
+	}
+	else if (numShapes >= (int) storage.shapes.size()) {
+		ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
+	}
+	else {
+		ui->shapeList->setCurrentIndex(numShapes);
+	}
 }
 
 void MainWindow::on_actionMove_triggered()
 {
-	int numShapes = renderArea->getShapes().size();
-    Move *move = new Move(numShapes, this);
-    QObject::connect(move, &Move::Move_Signal, this,
-                     &MainWindow::Move_Signal_Handler);
-    move->show();
-}
-
-void MainWindow::Move_Signal_Handler(int ID, int x_coord, int y_coord)
-{
-	renderArea->moveShape(ID, x_coord, y_coord);
+	Disconnect();
+	SetDrawCursor(Qt::CrossCursor);
+	int numShapes = ui->shapeList->currentIndex();
+	using namespace std::placeholders;
+	QObject::connect(this, &MainWindow::onCanvasClick, [this, numShapes](int x, int y){
+		Disconnect();
+		storage.shapes[numShapes]->setPos(x, y);
+		storage.model.itemsChanged();
+		ui->shapeList->setCurrentIndex(numShapes);
+		onDataChanged();
+	});
 }
 
 void MainWindow::on_actionLogout_triggered()
@@ -152,9 +283,23 @@ void MainWindow::on_actionLogout_triggered()
 template<class T>
 void MainWindow::AddRect(int x, int y)
 {
+	Disconnect();
+	SetDrawCursor(Qt::CrossCursor);
 	auto *rect = new T{QRect{x, y, 0, 0}};
-	renderArea->getShapes().push_back(rect);
-	ui->renderarea->update();
+	storage.shapes.push_back(rect);
+	storage.model.itemsChanged();
+	onDataChanged();
+
+	ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
+	auto* item = ui->prop_tree->topLevelItem(0)->child(3);
+	auto* widget = dynamic_cast<ItemButton*>(ui->prop_tree->itemWidget(item, 1));
+	widget->clicked(1);
+}
+
+void MainWindow::Disconnect()
+{
+	QObject::disconnect(this, &MainWindow::onCanvasClick, nullptr, nullptr);
+	SetDrawCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::SetAdminRights(bool val)

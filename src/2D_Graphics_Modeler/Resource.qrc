@@ -13,5 +13,6 @@
         <file>img/trash.png</file>
         <file>img/Edit.png</file>
         <file>img/move.png</file>
+        <file>img/target_small.png</file>
     </qresource>
 </RCC>
