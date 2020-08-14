@@ -39,7 +39,7 @@ QRect Rectangle::getRect() const
 
 void Rectangle::setRect(const QRect &rect)
 {
-	setPos(rect.center());
+	Shape::setPos(rect.center());
 	width = rect.width();
 	height = rect.height();
 }
@@ -71,3 +71,21 @@ double Rectangle::perimeter() const
 	return std::abs(2 * (width + height));
 }
 
+//void Rectangle::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
+//{
+//	painter->setPen(getPen());
+////	painter->setBrush(getBrush());
+//	painter->setBrush(Qt::red);
+//	painter->translate(getPos());
+
+////	QRect rect = getRect();
+//	QRect rect = {100,0,50,50};
+////	rect.moveCenter(QPoint{});
+
+//	painter->drawRect(rect);
+//}
+
+//QRectF Rectangle::boundingRect() const
+//{
+//	return QRectF{getRect()};
+//}

@@ -197,7 +197,7 @@ void Disconnect(MainWindow* window, QTreeWidget* tree)
 	QObject::disconnect(window, &MainWindow::onCanvasClick, nullptr, nullptr);
 	QObject::disconnect(tree, &QTreeWidget::currentItemChanged, nullptr, nullptr);
 	window->SetDrawCursor(Qt::ArrowCursor);
-//	window->SetStatusText("");
+	window->SetStatusBar("");
 }
 
 MainWindow* GetWindow(QTreeWidgetItem* item)
@@ -234,7 +234,7 @@ PropertyItem<QPoint>::PropertyItem(QTreeWidgetItem* parent, QString name, getter
 		treeWidget()->setCurrentItem(this);
 		// Set pointer
 		window->SetDrawCursor(Qt::CrossCursor);
-//		window->SetStatusText("Click to set position");
+		window->SetStatusBar("Click to set position");
 		// Set setter
 		QObject::connect(window, &MainWindow::onCanvasClick, [this, window](int x, int y) {
 			setter(QPoint{x, y});
@@ -310,7 +310,7 @@ void PropertyItem<QList<QPoint>>::add()
 
 	// Set pointer
 	window->SetDrawCursor(Qt::CrossCursor);
-//	window->SetStatusText("Click to add points");
+	window->SetStatusBar("Click to add points");
 
 	// Set setter
 	QObject::connect(window, &MainWindow::onCanvasClick, [this](int x, int y) {
@@ -403,7 +403,7 @@ PropertyItem<QRect>::PropertyItem(QTreeWidgetItem* parent, QString name, getter_
 		case 0:
 			treeWidget()->setCurrentItem(this->child(0));
 			// Set pointer
-//			window->SetStatusText("Click to move the top-left corner");
+			window->SetStatusBar("Click to move the top-left corner");
 			// Set setter
 			QObject::connect(window, &MainWindow::onCanvasClick, [this, window](int x, int y) {
 				QRect r = getter();
@@ -417,7 +417,7 @@ PropertyItem<QRect>::PropertyItem(QTreeWidgetItem* parent, QString name, getter_
 		case 1:
 			treeWidget()->setCurrentItem(this->child(2));
 			// Set pointer
-//			window->SetStatusText("Click to set the bottom-right corner");
+			window->SetStatusBar("Click to set the bottom-right corner");
 			// Set setter
 			QObject::connect(window, &MainWindow::onCanvasClick, [this, window](int x, int y) {
 				QRect r = getter();

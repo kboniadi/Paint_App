@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <QPoint>
+#include <QGraphicsItem>
 #include "rectangle.h"
 
 /*!
@@ -12,7 +13,7 @@
 class Ellipse : public Rectangle
 {
 public:
-
+//	Ellipse(QGraphicsItem *parent = nullptr);
     /*!
      * \brief initializes data pertaining to Ellipse and shape
      * \param color of the pen
@@ -57,10 +58,13 @@ public:
      * \return (double) perimeter of polygon
      */
     double perimeter() const override;
-
+//	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
+//	QRectF boundingRect() const override;
+protected:
+//	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+//	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 private:
-
-    QPoint center;
+//    QPoint center;
 //	int radius_x;
 //	int radius_y;
 };

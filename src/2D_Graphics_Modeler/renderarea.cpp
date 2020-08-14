@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 
 #include <QMouseEvent>
+#include <QDebug>
 
 RenderArea::RenderArea(QWidget *parent)
 	: QWidget(parent), shapes{nullptr}, target{":/res/img/target_small.png"}, selected{-1}
@@ -11,8 +12,6 @@ RenderArea::RenderArea(QWidget *parent)
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
 	setMouseTracking(true);
-//	shapes_list = textParse();
-//    update();
 }
 
 //QSize RenderArea::sizeHint() const
@@ -50,7 +49,7 @@ void RenderArea::paintEvent(QPaintEvent */*event*/)
 			Shape* s = (*shapes)[selected];
 			QPainter paint{this};
 			QPen outline;
-			outline.setStyle(Qt::NoPen);
+			outline.setStyle(Qt::DotLine);
 			paint.setPen(outline);
 			paint.drawRect(s->getRect().marginsAdded(QMargins{2, 2, 2, 2}));
 			paint.drawImage(s->getPos() - offset, target);
@@ -71,3 +70,44 @@ void RenderArea::mousePressEvent(QMouseEvent *event)
 		dynamic_cast<MainWindow*>(window())->onCanvasClick(event->x(), event->y());
 	}
 }
+
+void RenderArea::mouseMoveEvent(QMouseEvent *event)
+{
+	if (event->buttons() & Qt::LeftButton) {
+		dynamic_cast<MainWindow*>(window())->onCanvasDrag(event->x(), event->y());
+	}
+}
+
+void RenderArea::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	if (event->button() & Qt::LeftButton) {
+		dynamic_cast<MainWindow*>(window())->onCanvasDoubleClick(event->x(), event->y());
+	}
+}
+
+//void RenderArea::mouseReleaseEvent(QMouseEvent *event)
+//{
+
+//}
+
+//int RenderArea::itemAt(const QPoint &pos)
+//{
+//	static int j= 1;
+//	QPainterPath path;
+
+//	for (int i = shapes->size() - 1; i >= 0; i--) {
+//		const Shape *item = (*shapes)[i];
+//		path.addRect(item->getRect());
+//		qDebug() << path;
+//		if (path.contains(pos - item->getPos())) {
+//			qDebug() << "collided " << j++ << '\n';
+//			return i;
+//		}
+//	}
+//	return -1;
+//}
+
+//void RenderArea::moveItemTo(const QPoint &pos)
+//{
+//	QPoint offset = pos - previous
+//}

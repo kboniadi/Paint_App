@@ -37,14 +37,18 @@ public:
      * \brief sets renderArea's cursor
      */
     void SetDrawCursor(const QCursor&);
+	void SetStatusBar(const QString&, int timeout = 0);
 signals:
 	void onCanvasClick(int x, int y);
+	void onCanvasDoubleClick(int x, int y);
+	void onCanvasDrag(int x, int y);
 protected:
     /*!
      * \brief accpets the close event
      * \param close event
      */
 	void closeEvent(QCloseEvent *event) override;
+	void keyPressEvent(QKeyEvent *event) override;
 private slots:
 
 	void on_shapeList_currentIndexChanged(int index);
@@ -120,6 +124,8 @@ private slots:
      * \brief move the shape when 'Ok' is pressed in the "Move" dialogue
      */
 	void on_actionMove_triggered();
+	void on_actionNew_triggered();
+
 private:
 	template<class T>
 	void AddRect(int x, int y);
@@ -129,12 +135,15 @@ private:
 	 * @param (bool) value that controls the current user permissions
 	 */
 	void Disconnect();
+	void DisconnectDoubleClick();
+	void DisconnectDrag();
 	void SetAdminRights(bool);
 
 	Storage storage;
 	Ui::MainWindow *ui;			//!< ptr to the mainWindow UI
 	QList<QObject*> adminFeats;	//!< list of action_triggers that only
 								//!< admin can use
+	QLabel status;
 	bool modified;
 };
 #endif // MAINWINDOW_H

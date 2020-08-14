@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 	setWindowTitle(tr("Chameleon Painter"));
+	ui->statusbar->addWidget(&status);
 	adminFeats = {
 		ui->actionAdd_Ellipse,
 		ui->actionAdd_Line,
@@ -49,7 +50,6 @@ MainWindow::MainWindow(QWidget *parent)
         ui->actionPaste,
 		ui->actionMove,
 		ui->prop_tree,
-		ui->shapeList
 	};
 
 	SetAdminRights(false);
@@ -78,10 +78,35 @@ void MainWindow::SetDrawCursor(const QCursor &cursor)
 	ui->renderarea->setCursor(cursor);
 }
 
+void MainWindow::SetStatusBar(const QString &str, int timeout)
+{
+	if (timeout == 0) {
+		ui->statusbar->clearMessage();
+		status.setText(str);
+		if (str.isEmpty()) {
+			status.hide();
+		}
+		else {
+			status.show();
+		}
+	}
+	else {
+		ui->statusbar->showMessage(str, timeout);
+	}
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if (!modified)
 		event->accept();
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Escape) {
+		SetStatusBar("");
+		Disconnect();
+	}
 }
 
 void MainWindow::on_shapeList_currentIndexChanged(int index)
@@ -136,6 +161,7 @@ void MainWindow::on_actionAdd_Rectangle_triggered()
 {
 	Disconnect();
 	SetDrawCursor(Qt::CrossCursor);
+	SetStatusBar("Click to set the top-left coordinate of the Rectangle");
 	using namespace std::placeholders;
 	connect(this, &MainWindow::onCanvasClick, std::bind(&MainWindow::AddRect<Rectangle>, this, _1, _2));
 }
@@ -144,7 +170,7 @@ void MainWindow::on_actionAdd_Ellipse_triggered()
 {
 	Disconnect();
 	SetDrawCursor(Qt::CrossCursor);
-
+	SetStatusBar("Click to set the top-left coordinate of the Ellipse");
 	using namespace std::placeholders;
 	connect(this, &MainWindow::onCanvasClick, std::bind(&MainWindow::AddRect<Ellipse>, this, _1, _2));
 }
@@ -153,7 +179,7 @@ void MainWindow::on_actionAdd_Polygon_triggered()
 {
 	Disconnect();
 	SetDrawCursor(Qt::CrossCursor);
-//	SetStatusText("Click the first point for the polygon");
+	SetStatusBar("Click to set the first point for the Polygon");
 
 	connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
 		Disconnect();
@@ -175,7 +201,7 @@ void MainWindow::on_actionAdd_Polyline_triggered()
 {
 	Disconnect();
 	SetDrawCursor(Qt::CrossCursor);
-//	SetStatusText("Click the first point for the polygon");
+	SetStatusBar("Click to set the first point for the Polyline");
 
 	connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
 		Disconnect();
@@ -197,7 +223,7 @@ void MainWindow::on_actionAdd_Line_triggered()
 {
 	Disconnect();
 	SetDrawCursor(Qt::CrossCursor);
-//	SetStatusText("Click the starting point for the line");
+	SetStatusBar("Click to set the starting point for the line");
 
 	connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
 		auto* line = new Line{QPoint{x, y}, QPoint{x, y}};
@@ -208,7 +234,7 @@ void MainWindow::on_actionAdd_Line_triggered()
 		ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
 
 		disconnect(this, &MainWindow::onCanvasClick, nullptr, nullptr);
-//		SetStatusText("Click the ending point for the line");
+		SetStatusBar("Click to set the ending point for the line");
 		connect(this, &MainWindow::onCanvasClick, [this, line](int x, int y) {
 			Disconnect();
 
@@ -222,7 +248,7 @@ void MainWindow::on_actionAdd_Text_triggered()
 {
 	Disconnect();
 	SetDrawCursor(Qt::CrossCursor);
-//	SetStatusText("Click to add a text box");
+	SetStatusBar("Click to add a text box");
 
 	connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
 		Disconnect();
@@ -240,46 +266,174 @@ void MainWindow::on_actionAdd_Text_triggered()
 
 void MainWindow::on_actionDelete_triggered()
 {
-	int numShapes = ui->shapeList->currentIndex();
-	auto it = storage.shapes.begin();
-	for (int i = 0; i < numShapes; i++) {
-		++it;
-	}
-	delete *it;
+	Disconnect();
+	DisconnectDrag();
+	SetDrawCursor(Qt::PointingHandCursor);
+	SetStatusBar("Hit the ESC key to exit delete mode");
+	QObject::connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
+		int count = 0;
+		if (storage.shapes.size() != 0) {
+			for (auto it = storage.shapes.begin(); it != storage.shapes.end(); ++it) {
+				if (x >= (*it)->getRect().x() &&
+					x <= (*it)->getRect().x() + (*it)->getRect().width() &&
+					y >= (*it)->getRect().y() &&
+					y <= (*it)->getRect().y() + (*it)->getRect().height()) {
+					ui->shapeList->setCurrentIndex(count);
+				}
+				count++;
+			}
+			int numShapes = ui->shapeList->currentIndex();
+			auto it = storage.shapes.begin();
+			for (int i = 0; i < numShapes; i++) {
+				++it;
+			}
+			delete *it;
 
-	storage.shapes.erase(it);
-	storage.model.itemsChanged();
-	onDataChanged();
+			storage.shapes.erase(it);
+			storage.model.itemsChanged();
+			onDataChanged();
 
-	if (storage.shapes.size() == 0) {
-		on_shapeList_currentIndexChanged(0);
-	}
-	else if (numShapes >= (int) storage.shapes.size()) {
-		ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
-	}
-	else {
-		ui->shapeList->setCurrentIndex(numShapes);
-	}
+			if (storage.shapes.size() == 0) {
+				on_shapeList_currentIndexChanged(0);
+			}
+			else if (numShapes >= (int) storage.shapes.size()) {
+				ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
+			}
+			else {
+				ui->shapeList->setCurrentIndex(numShapes);
+			}
+		}
+	});
+//	int numShapes = ui->shapeList->currentIndex();
+//	auto it = storage.shapes.begin();
+//	for (int i = 0; i < numShapes; i++) {
+//		++it;
+//	}
+//	delete *it;
+
+//	storage.shapes.erase(it);
+//	storage.model.itemsChanged();
+//	onDataChanged();
+
+//	if (storage.shapes.size() == 0) {
+//		on_shapeList_currentIndexChanged(0);
+//	}
+//	else if (numShapes >= (int) storage.shapes.size()) {
+//		ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
+//	}
+//	else {
+//		ui->shapeList->setCurrentIndex(numShapes);
+//	}
 }
 
 void MainWindow::on_actionMove_triggered()
 {
 	Disconnect();
-	SetDrawCursor(Qt::CrossCursor);
-	int numShapes = ui->shapeList->currentIndex();
-	using namespace std::placeholders;
-	QObject::connect(this, &MainWindow::onCanvasClick, [this, numShapes](int x, int y){
-		Disconnect();
-		storage.shapes[numShapes]->setPos(x, y);
-		storage.model.itemsChanged();
-		ui->shapeList->setCurrentIndex(numShapes);
-		onDataChanged();
+	SetStatusBar("Hit the ESC key to exit move mode");
+	SetDrawCursor(Qt::OpenHandCursor);
+
+	QObject::connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
+		int count = 0;
+		int dx = 0;
+		int dy = 0;
+//		qDebug() << storage.shapes[0]->getRect().x() << " " << storage.shapes[0]->getRect().y() << '\n';
+//		qDebug() << storage.shapes[0]->getRect().center() << '\n';
+//		qDebug() << x << ' ' << y << '\n';
+//		qDebug() << storage.shapes[0]->getPos() << '\n';
+		if (storage.shapes.size() != 0) {
+			for (auto it = storage.shapes.begin(); it != storage.shapes.end(); ++it) {
+				if (x >= (*it)->getRect().x() &&
+					x <= (*it)->getRect().x() + (*it)->getRect().width() &&
+					y >= (*it)->getRect().y() &&
+					y <= (*it)->getRect().y() + (*it)->getRect().height()) {
+					ui->shapeList->setCurrentIndex(count);
+					dx = x - (*it)->getRect().center().x();
+					dy = y - (*it)->getRect().center().y();
+
+					QObject::connect(this, &MainWindow::onCanvasDrag, [this, dx, dy](int x, int y) {
+						int index = ui->shapeList->currentIndex();
+						storage.shapes[index]->setPos(x - dx, y - dy);
+						storage.model.itemsChanged();
+						onDataChanged();
+						ui->shapeList->setCurrentIndex(index);
+					});
+
+					break;
+				} else {
+					DisconnectDrag();
+				}
+				count++;
+			}
+		}
 	});
+
+//	QObject::connect(this, &MainWindow::onCanvasDrag, [this, dx, dy](int x, int y) {
+//		int index = ui->shapeList->currentIndex();
+//		storage.shapes[index]->setPos(x - dx, y - dy);
+//		storage.model.itemsChanged();
+//		onDataChanged();
+//		ui->shapeList->setCurrentIndex(index);
+//	});
+
+
+//	QObject::connect(this, &MainWindow::onCanvasDrag, [this](int x, int y) {
+//		int index = 0;
+//		if (storage.shapes.size() != 0) {
+//			index = ui->shapeList->currentIndex();
+//			if (x >= storage.shapes[index]->getRect().x() &&
+//				x <= storage.shapes[index]->getRect().x() + storage.shapes[index]->getRect().width() &&
+//				y >= storage.shapes[index]->getRect().y() &&
+//				y <= storage.shapes[index]->getRect().y() + storage.shapes[index]->getRect().height()) {
+//				storage.shapes[index]->setPos(x, y);
+//				storage.model.itemsChanged();
+//				onDataChanged();
+//				ui->shapeList->setCurrentIndex(index);
+//			}
+//		}
+//	});
+
+//	for (auto it = storage.shapes.begin(); it != storage.shapes.end(); ++it) {
+//		if (x >= (*it)->getRect().x() &&
+//			x <= (*it)->getRect().x() + (*it)->getRect().width() &&
+//			y >= (*it)->getRect().y() &&
+//			y <= (*it)->getRect().y() + (*it)->getRect().height()) {
+//			storage.shapes[numShapes]->setPos(x, y);
+//			storage.model.itemsChanged();
+//			ui->shapeList->setCurrentIndex(numShapes);
+//			onDataChanged();
+//			break;
+//		}
+//	}
+//	QObject::connect(this, &MainWindow::onCanvasDoubleClick, [this](int x, int y) {
+//		int count = 0;
+//		for (auto it = storage.shapes.begin(); it != storage.shapes.end(); ++it) {
+//			if (x >= (*it)->getRect().x() &&
+//				x <= (*it)->getRect().x() + (*it)->getRect().width() &&
+//				y >= (*it)->getRect().y() &&
+//				y <= (*it)->getRect().y() + (*it)->getRect().height()) {
+//				ui->shapeList->setCurrentIndex(count);
+//				break;
+//			}
+//			count++;
+//		}
+//	});
+
 }
 
 void MainWindow::on_actionLogout_triggered()
 {
 	SetAdminRights(false);
+}
+
+void MainWindow::on_actionNew_triggered()
+{
+	for (auto itr = storage.shapes.begin(); itr != storage.shapes.end(); ++itr)
+		delete *itr;
+
+	storage.shapes.clear();
+	storage.model.itemsChanged();
+	on_shapeList_currentIndexChanged(0);
+	onDataChanged();
 }
 
 template<class T>
@@ -301,7 +455,19 @@ void MainWindow::AddRect(int x, int y)
 void MainWindow::Disconnect()
 {
 	QObject::disconnect(this, &MainWindow::onCanvasClick, nullptr, nullptr);
+	QObject::disconnect(this, &MainWindow::onCanvasDrag, nullptr, nullptr);
 	SetDrawCursor(Qt::ArrowCursor);
+	SetStatusBar("");
+}
+
+void MainWindow::DisconnectDoubleClick()
+{
+	QObject::disconnect(this, &MainWindow::onCanvasDoubleClick, nullptr, nullptr);
+}
+
+void MainWindow::DisconnectDrag()
+{
+	QObject::disconnect(this, &MainWindow::onCanvasDrag, nullptr, nullptr);
 }
 
 void MainWindow::SetAdminRights(bool val)
