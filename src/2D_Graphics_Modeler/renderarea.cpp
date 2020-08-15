@@ -1,82 +1,113 @@
+#include <QMouseEvent>
 #include "renderarea.h"
+#include "mainwindow.h"
+
+#include <QMouseEvent>
+#include <QDebug>
 
 RenderArea::RenderArea(QWidget *parent)
-    : QWidget(parent)
+	: QWidget(parent), shapes{nullptr}, target{":/res/img/target.png"}, selected{-1}
 {
     //sets the background to white
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
-    //parse shapes.txt
-    //assign it to a variable
-    //assignShapeID
-    //update();
-	shapes_list = textParse();
-    update();
+	setMouseTracking(true);
 }
 
 QSize RenderArea::sizeHint() const
 {
-    return QSize(400, 200);
+	return QSize(1280, 700);
 }
 
-QSize RenderArea::minimumSizeHint() const
+//QSize RenderArea::minimumSizeHint() const
+//{
+//	return QSize(800, 600);
+//}
+
+void RenderArea::setStorage(cs1c::vector<Shape *> *v)
 {
-	return QSize(1200, 700);
+	shapes = v;
 }
 
-//can comment out "event" to compile
+void RenderArea::setSelected(int x)
+{
+	selected = x;
+	update();
+}
+
 void RenderArea::paintEvent(QPaintEvent */*event*/)
 {
-    //initialize variables for specific shapes
-    //e.g. QPoints for a polygon
+	static QPoint offset{target.size().width() / 2, target.size().height() / 2};
+	if (shapes) {
+		//initialize variables for specific shapes
+		//e.g. QPoints for a polygon
+		for (auto it = shapes->begin(); it != shapes->end(); ++it) {
+			(*it)->draw(this);
+		}
 
-	for (auto it = shapes_list.begin(); it != shapes_list.end(); ++it) {
-		(*it)->Draw(this);
-    }
-	update();
-	//save
-    //restore
+		if (selected >= 0 && selected < (int) shapes->size()) {
+			Shape* s = (*shapes)[selected];
+			QPainter paint{this};
+			QPen outline;
+			outline.setStyle(Qt::DotLine);
+			paint.setPen(outline);
+			paint.drawRect(s->getRect().marginsAdded(QMargins{2, 2, 2, 2}));
+			paint.drawImage(s->getPos() - offset, target);
+		}
 
-
-}
-
-RenderArea::~RenderArea()
-{
-    //save shapes
-    //delete shapes in vector
-
-	for (auto it = shapes_list.begin(); it != shapes_list.end(); ++it) {
-        delete (*it);
-    }
+	}	
 }
 
 void RenderArea::addShape(Shape *shape)
 {
-	shapes_list.push_back(shape);
+	shapes->push_back(shape);
     update();
 }
 
-void RenderArea::deleteShape(int ID)
+void RenderArea::mousePressEvent(QMouseEvent *event)
 {
-	if (static_cast<size_t>(ID) > shapes_list.getLength()) {
-		QMessageBox::warning(this, "Errors",
-		"That ID is out of range!");
-		return;
+	if (event->button() & Qt::LeftButton) {
+		dynamic_cast<MainWindow*>(window())->onCanvasClick(event->x(), event->y());
 	}
-	shapes_list.erase(shapes_list.begin() + (ID - 1));
-	update();
 }
 
-void RenderArea::moveShape(int ID, int x_coord, int y_coord)
+void RenderArea::mouseMoveEvent(QMouseEvent *event)
 {
-	for (auto it = shapes_list.begin(); it != shapes_list.end(); it++)
-    {
-        if ((*it)->getID() == ID)
-        {
-            (*it)->Move(x_coord, y_coord);
-            break;
-        }
-    }
-    update();
+	if (event->buttons() & Qt::LeftButton) {
+		dynamic_cast<MainWindow*>(window())->onCanvasDrag(event->x(), event->y());
+	}
 }
 
+void RenderArea::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	if (event->button() & Qt::LeftButton) {
+		dynamic_cast<MainWindow*>(window())->onCanvasDoubleClick(event->x(), event->y());
+	}
+}
+
+//void RenderArea::mouseReleaseEvent(QMouseEvent *event)
+//{
+
+//}
+
+//int RenderArea::itemAt(const QPoint &pos)
+//{
+//	static int j= 1;
+//	QPainterPath path;
+
+//	for (int i = shapes->size() - 1; i >= 0; i--) {
+//		const Shape *item = (*shapes)[i];
+//		path.addRect(item->getRect());
+//		qDebug() << path;
+//		if (path.contains(pos - item->getPos())) {
+//			qDebug() << "collided " << j++ << '\n';
+//			return i;
+//		}
+//	}
+//	return -1;
+//}
+
+//void RenderArea::moveItemTo(const QPoint &pos)
+//{
+//	QPoint offset = pos - previous
+//}

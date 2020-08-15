@@ -5,45 +5,6 @@
 #include <QPaintDevice>
 #include <assert.h>
 
-
-static const Qt::GlobalColor color_list[] = {Qt::white,
-											 Qt::black,
-                                             Qt::red,
-                                             Qt::green,
-                                             Qt::blue,
-                                             Qt::cyan,
-											 Qt::magenta,
-                                             Qt::yellow,
-                                             Qt::gray,};
-
-
-
-static const Qt::PenStyle style_list[] = {Qt::NoPen,
-										  Qt::SolidLine,
-										  Qt::DashLine,
-										  Qt::DotLine,
-										  Qt::DashDotLine,
-										  Qt::DashDotDotLine,
-										  Qt::CustomDashLine};
-
-
-
-static const Qt::PenCapStyle cap_list[] = {Qt::FlatCap,
-										   Qt::SquareCap,
-										   Qt::RoundCap};
-
-static const Qt::PenJoinStyle join_list[] = {Qt::MiterJoin,
-											 Qt::BevelJoin,
-											 Qt::RoundJoin,
-											 Qt::SvgMiterJoin};
-
-
-
-
-static const Qt::BrushStyle bstyle_list[] = {Qt::NoBrush,
-                                             Qt::SolidPattern,
-											 Qt::HorPattern,
-                                             Qt::VerPattern};
 /*!
  * @class Shape
  * @brief This class represents a Shape object. It manages 5 attribute.
@@ -51,33 +12,24 @@ static const Qt::BrushStyle bstyle_list[] = {Qt::NoBrush,
 class Shape {
 public:
 
+	using id_t = unsigned int;
+	static id_t shapeid;
+
 	/*!
 	 * \enum ShapeType
 	 * \brief Represents different supported shapes
 	 */
 	enum ShapeType {
-		NoShape,	//!< value 1
-		Line,		//!< value 2
-		Polyline,	//!< value 3
-		Polygon,	//!< value 4
-		Rectangle,	//!< value 5
-		Square,		//!< value 6
-		Ellipse,	//!< value 7
-		Circle,		//!< value 8
-		Text		//!< value 9
+		NoShape,	//!< value 0
+		Line,		//!< value 1
+		Polyline,	//!< value 2
+		Polygon,	//!< value 3
+		Rectangle,	//!< value 4
+		Square,		//!< value 5
+		Ellipse,	//!< value 6
+		Circle,		//!< value 7
+		Text		//!< value 8
 	};
-
-	/*!
-	 * \todo implementation unknown
-	 * \param device pointer to QPaintDevice
-	 */
-    //TODO implementation
-//	Shape(QPaintDevice *device = nullptr);
-    /*!
-     * \brief intialize Shape with pen color
-     * \param color of the pen
-     */
-    Shape(int id, int color, QString shapeType);
 
 	/*!
 	 * \brief Initialize class attributes
@@ -90,63 +42,46 @@ public:
 	 * \param color of the brush
 	 * \param style of the brush
 	 */
-    Shape(int, int, int, int, int, int, int , int, QString);
+	explicit Shape(const QPoint& pos = {}, id_t id = 0, const QPen& pen = {},
+		const QBrush& brush = {});
 
 	/*!
 	 * \brief deallocates any allocated memory
 	 */
-	virtual ~Shape() {}
+	virtual ~Shape() = default;
 
 	/*!
 	 * \brief prevent the usage of a copy contructor
 	 * \param type instance of a Shape class
 	 */
 	Shape(Shape& type) = delete;
+	Shape& operator=(const Shape&) = delete;
 
-	/*!
-	 * \brief sets the type of Shape
-	 * \param ashape enum representing a type of shape
-	 */
-	void setShape(ShapeType ashape) {shape = ashape;}
-
-	/*!
-	 * \brief sets all the components of a pen object
-	 * \param color enum representing the color of the pen
-	 * \param width size of pen mark
-	 * \param style enum representing the style of the pen
-	 * \param cap enum representing the cap style
-	 * \param join enum representing the join style
-	 */
-	void setPen(Qt::GlobalColor color = Qt::black, qreal width = 1,
-		Qt::PenStyle style = Qt::SolidLine, Qt::PenCapStyle cap = Qt::SquareCap,
-		Qt::PenJoinStyle join = Qt::BevelJoin);
-
-	/*!
-	 * \brief sets all the components of a brush object
-	 * \param color enum representing the color of the brush
-	 * \param style enum representing the style of the brush
-	 */
-	void setBrush(Qt::GlobalColor color = Qt::black,
-		Qt::BrushStyle style = Qt::NoBrush);
+	bool operator==(const Shape &other) const {return id == other.id;}
+	bool operator<(const Shape &other) const {return id < other.id;}
 
 	/*!
 	 * \brief sets an id for a shape
 	 * \param ID new id
 	 */
-	void setID(int ID) {id = ID;}
+	void setID(const id_t ID) {id = ID;}
+
+	void setPen(const QPen &pen) {this->pen = pen;}
+	void setBrush(const QBrush &brush) {this->brush = brush;}
+
+	void setPos(int x, int y)
+	{
+		position.setX(x);
+		position.setY(y);
+	}
+
+	void setPos(const QPoint& pos) {position = pos;}
 
 	/*!
-	 * \brief sets the pen, brush, and painter object with default values
+	 * \brief gets the id for the shape
+	 * \return shape id
 	 */
-	void setDefautStyle();
-
-//	void DrawRect(int width, int height);
-
-	/*!
-	 * \brief gets the shape type
-	 * \return Shape Type
-	 */
-    QString getShape() const {return shape;}
+	id_t getID() const {return id;}
 
 	/*!
 	 * \brief gets the pen object
@@ -160,24 +95,27 @@ public:
 	 */
 	const QBrush& getBrush() const {return brush;}
 
-	/*!
-	 * \brief gets the id for the shape
-	 * \return shape id
-	 */
-	int getID() const {return id;}
+	const QPoint& getPos() const {return position;}
 
 	/*!
 	 * \brief moves the shape or parts of shapes
 	 * \param xcoord of that vertex
 	 * \param ycoord of that vertex
 	 */
-    virtual void Move(const int xcoord, const int ycoord) = 0;
+	void move(int dx, int dy);
+
+	virtual QRect getRect() const = 0;
+	/*!
+	 * \brief gets the shape type
+	 * \return Shape Type
+	 */
+	virtual ShapeType getShape() const = 0;
 
 	/*!
 	 * \brief Draws the shape
 	 * \param (QPaintDevice*) device to interface with painter object
 	 */
-	virtual void Draw(QPaintDevice*) = 0;
+	virtual void draw(QPaintDevice*) = 0;
 
 	/*!
 	 * \brief area of a shape
@@ -190,7 +128,9 @@ public:
 	 * \return (double) perimeter of a specific shape
 	 */
 	virtual double perimeter() const = 0;
+	static bool hasfill(ShapeType);
 protected:
+	void swap(Shape&) noexcept;
 	/*!
 	 * \brief gets the painter object
 	 * \return reference to a painter instance
@@ -198,11 +138,17 @@ protected:
 	QPainter& getPainter() {return painter;}
 private:
 	QPainter painter;
-	int id;
-    QString shape;
+	QPoint position;
+	id_t id{0};
 	QPen pen;
 	QBrush brush;
-
 };
+
+extern const QMap<Shape::ShapeType, QString> SHAPE_NAMES;
+extern const QMap<QString, QColor> COLOR_NAMES;
+extern const QMap<Qt::PenStyle, QString> STYLE_NAMES;
+extern const QMap<Qt::PenCapStyle, QString> CAP_NAMES;
+extern const QMap<Qt::PenJoinStyle, QString> JOIN_NAMES;
+extern const QMap<Qt::BrushStyle, QString> BSTYLE_NAMES;
 
 #endif // SHAPE_H

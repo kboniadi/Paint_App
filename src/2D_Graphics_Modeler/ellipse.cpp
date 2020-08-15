@@ -1,33 +1,47 @@
 #include "ellipse.h"
 
-Ellipse::Ellipse(int id, int color, int pen_width, int style, int cap, int join,
-    int brush_color, int brush_style, QPoint center, int a, int b, QString shapeType)
-    : Shape(id, color, pen_width, style, cap, join, brush_color, brush_style, shapeType),
-      center(center), a(a), b(b)
-{}
+Ellipse::~Ellipse() = default;
 
-void Ellipse::Move(const int xcoord, const int ycoord)
+Ellipse::Ellipse(Ellipse &&other) noexcept
+    : Rectangle{(id_t) -1}
 {
-    center = QPoint(xcoord, ycoord);
+    swap(other);
+    std::swap(width, other.width);
+    std::swap(height, other.height);
 }
 
-void Ellipse::Draw(QPaintDevice *device)
+Ellipse &Ellipse::operator=(Ellipse &&other) noexcept
+{
+    Ellipse temp{std::move(other)};
+    swap(temp);
+    std::swap(width, temp.width);
+    std::swap(height, temp.height);
+    return *this;
+}
+
+void Ellipse::draw(QPaintDevice *device)
 {
 	getPainter().begin(device);
 	getPainter().setPen(getPen());
 	getPainter().setBrush(getBrush());
-	getPainter().drawEllipse(center, a, b);
+	getPainter().translate(getPos());
+
+	QRect rect = getRect();
+	rect.moveCenter(QPoint{});
+
+	getPainter().drawEllipse(rect);
 	getPainter().end();
 }
 
 double Ellipse::area() const
 {
-    return M_PI * a * b;
+	return M_PI * std::abs(width) * std::abs(height);
 }
 
 double Ellipse::perimeter() const
 {
-    double c = pow((a-b), 2);
-    double d = pow((a+b), 2);
-    return M_PI * (a+b) * ( 3 * ( c / (d * sqrt(-3*c/d+4) + 10) ) + 1 );
+	double c = pow((width-height), 2);
+	double d = pow((width+height), 2);
+	return M_PI * (width+height) *
+			( 3 * ( c / (d * sqrt(-3*c/d+4) + 10) ) + 1 );
 }

@@ -5,7 +5,6 @@
         <file>img/graph.png</file>
         <file>img/polygon.png</file>
         <file>img/rectangle.png</file>
-        <file>img/remove.png</file>
         <file>img/add-file.png</file>
         <file>img/floppy-disk.png</file>
         <file>img/open.png</file>
@@ -13,5 +12,10 @@
         <file>img/trash.png</file>
         <file>img/Edit.png</file>
         <file>img/move.png</file>
+        <file>img/size.png</file>
+        <file>img/remove.png</file>
+        <file>img/line.png</file>
+        <file>img/add.png</file>
+        <file>img/target.png</file>
     </qresource>
 </RCC>

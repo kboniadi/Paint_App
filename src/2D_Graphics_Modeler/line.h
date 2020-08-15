@@ -1,7 +1,6 @@
 #ifndef LINE_H
 #define LINE_H
 
-
 #include <math.h>
 #include <QPoint>
 #include "shape.h"
@@ -16,9 +15,7 @@ public:
     /*!
      * \brief Line destructor deallocates memory
      */
-    ~Line() override
-    {
-    }
+	~Line() override = default;
 
     /*!
      * \brief initializes data pertaining to line
@@ -33,9 +30,19 @@ public:
      * \param ending poing
     */
 
-    explicit Line(int, int, int, int, int, int , int, int, QPoint,QPoint, QString);
+	explicit Line(const QPoint& pos_A = {}, const QPoint& pos_B = {},
+		id_t id = 0, const QPen& pen = {}, const QBrush& brush = {});
 
+    Line(Line&&) noexcept;
+    Line& operator=(Line&&) noexcept;
 
+	void setStart(const QPoint &otherstart);
+	void setEnd(const QPoint &otherend);
+
+	QRect getRect() const override;
+	ShapeType getShape() const override {return Shape::Line;}
+	QPoint getStart() const {return startPoint + getPos();}
+	QPoint getEnd() const {return endPoint + getPos();}
     /*!
      * \brief calculates the area of line
      * \return 0
@@ -49,18 +56,10 @@ public:
     double perimeter() const override;
 
     /*!
-     * \brief moves the Line
-     * \param x coordinate of line
-     * \param y coordinate of line
-     */
-
-    void Move(const int xcoord, const int ycoord) override;
-
-    /*!
      * \brief Draws the line
      * \param (QPaintDevice*) device to interface with painter object
      */
-    void Draw(QPaintDevice *) override;
+	void draw(QPaintDevice *) override;
 
 
 private:

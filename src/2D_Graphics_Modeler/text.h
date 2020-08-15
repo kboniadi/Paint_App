@@ -8,24 +8,10 @@
 
 using namespace std;
 
+extern const QMap<Qt::AlignmentFlag, QString> ALIGNMENT_TYPES;
+extern const QMap<QFont::Style, QString> FONT_STYLES;
+extern const QMap<QFont::Weight, QString> FONT_WEIGHTS;
 
-
-static const Qt::AlignmentFlag alignment_list[] = { Qt::AlignLeft,
-                                                    Qt::AlignRight,
-                                                    Qt::AlignTop,
-                                                    Qt::AlignBottom,
-                                                    Qt::AlignCenter};
-
-
-static const QFont::Style font_style_list[] = { QFont::StyleNormal,
-                                            QFont::StyleItalic,
-                                            QFont::StyleOblique};
-
-
-static const QFont::Weight weight_list[] = { QFont::Thin,
-                                             QFont::Light,
-                                             QFont::Normal,
-                                             QFont::Bold};
 /*!
  * @class Text
  * @brief This class represents a Text object. Manages 6 attributes.
@@ -43,43 +29,52 @@ public:
      * \param text font style
      * \param text font weight
      */
-	explicit Text(int, QString, int, int, int, QString, int, int, int, int,
-		int, int, QString);
+	explicit Text(const QPen &pen = {}, const QBrush &brush = {},
+		const QPoint &point = {}, id_t id = 0, const QFont &font = {},
+		const QString &str = "", Qt::AlignmentFlag flag = Qt::AlignCenter,
+		int width = -1, int height = -1)
+		: Shape{point, id, pen, brush}, font{font}, text{str}, alignment{flag},
+		  width{width}, height{height} {}
 
     /*!
      * \brief deallocates any allocated memory
      */
-    ~Text() override {}
+	~Text() override = default;
+	Text(Text&&) noexcept;
+	Text& operator=(Text&&) noexcept;
 
-    /*!
-     * \brief moves the Text
-     * \param new xcoord of that vertex
-     * \param new ycoord of that vertex
-     */
-    void Move(const int xcoord, const int ycoord) override;
+	void setText(QString text) {this->text = std::move(text);}
+	void setWidth(int aWidth) {width = aWidth;}
+	void setHeight(int aHeight) {height = aHeight;}
+	void setAlignment(Qt::AlignmentFlag align) {alignment = align;}
+	void setRect(const QRect&);
 
-    /*!
-     * \brief Draws the Text
-     * \param (QPaintDevice*) device to interface with painter object
-     */
-    void Draw(QPaintDevice *) override;
+	/*!
+	 * \brief sets all the components of a font object
+	 * \param point size int representing the size of the font
+	 * \param family Qstring representing the font family of the font
+	 * \param font style enum representing the style of the font (e.g. italic)
+	 * \param weight enum representing the weight of the font
+	 */
+	void setFont(QFont font) {this->font = std::move(font);}
 
-    /*!
-     * \brief sets all the components of a font object
-     * \param point size int representing the size of the font
-     * \param family Qstring representing the font family of the font
-     * \param font style enum representing the style of the font (e.g. italic)
-     * \param weight enum representing the weight of the font
-     */
-	void setFont(int pointSize = 10, QString fontFamily =
-			QString("Comic Sans MS"), QFont::Style fontStyle =
-			QFont::StyleNormal, QFont::Weight weight = QFont::Thin);
-
+	ShapeType getShape() const override {return Shape::Text;}
+	const QString& getText() const {return text;}
+	int getWidth() const {return width;}
+	int getHeight() const {return height;}
+	Qt::AlignmentFlag getAlignment() const {return alignment;}
+	QRect getRect() const override;
     /*!
      * \brief gets the font for the object
      * \return font reference (non-mutable)
      */
     const QFont& getFont() const {return font;}
+
+	/*!
+	 * \brief Draws the Text
+	 * \param (QPaintDevice*) device to interface with painter object
+	 */
+	void draw(QPaintDevice *) override;
 
 	/*!
 	 * \brief perimeter (not used for text box
@@ -94,12 +89,11 @@ public:
 	double area() const override {return -1;}
 
 private:
-    QPoint corner_vertex;
     QFont font;
     QString text;
-    int alignment_flag;
-	int width;
-	int length;
+	Qt::AlignmentFlag alignment = Qt::AlignCenter;
+	int width{-1};
+	int height{-1};
 };
 
 #endif // TEXT_H

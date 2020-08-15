@@ -1,48 +1,78 @@
 #include "text.h"
+#include <QMap>
 
+const QMap<Qt::AlignmentFlag, QString> ALIGNMENT_TYPES {
+	{Qt::AlignLeft, "AlignLeft"},
+	{Qt::AlignRight, "AlignRight"},
+	{Qt::AlignTop, "AlignTop"},
+	{Qt::AlignBottom, "AlignBottom"},
+	{Qt::AlignCenter, "AlignCenter"}
+};
 
-Text::Text(int id, QString text, int alignment_flag, int color, int pointSize,
-	QString fontFamily, int fontStyle, int fontWeight, int xcoord, int ycoord,
-	int width, int length, QString shapeType)
-	: Shape{id, color, shapeType}, corner_vertex{xcoord, ycoord}
+const QMap<QFont::Style, QString> FONT_STYLES {
+	{QFont::StyleNormal,"StyleNormal"},
+	{QFont::StyleItalic, "StyleItalic"},
+	{QFont::StyleOblique, "StyleOblique"}
+};
+
+const QMap<QFont::Weight, QString> FONT_WEIGHTS {
+	{QFont::Thin, "Thin"},
+	{QFont::Light, "Light"},
+	{QFont::Normal, "Normal"},
+	{QFont::Bold, "Bold"}
+};
+
+Text::Text(Text &&other) noexcept: Shape{QPoint{}, (id_t) -1}
 {
-    //text color is the same as the pen color
-	assert(color < 17 && color > -1);
-	font.setPointSize(pointSize);
-    font.setFamily(fontFamily);
-    font.setStyle(font_style_list[fontStyle]);
-    font.setWeight(weight_list[fontWeight]);
-    this->text = text;
-    this->alignment_flag = alignment_flag;
-	this->width = width;
-	this->length = length;
+	swap(other);
+	std::swap(font, other.font);
+	std::swap(text, other.text);
+	std::swap(alignment, other.alignment);
+	std::swap(width, other.width);
+	std::swap(height, other.height);
 }
 
-void Text::setFont(int pointSize, QString fontFamily, QFont::Style fontStyle,
-    QFont::Weight weight)
+Text &Text::operator=(Text &&other) noexcept
 {
-    font.setPointSize(pointSize);
-    font.setFamily(fontFamily);
-    font.setStyle(fontStyle);
-    font.setWeight(weight);
+	Text temp{std::move(other)};
+	swap(temp);
+	std::swap(font, other.font);
+	std::swap(text, other.text);
+	std::swap(alignment, other.alignment);
+	std::swap(width, other.width);
+	std::swap(height, other.height);
+	return *this;
 }
 
-void Text::Move(const int xcoord, const int ycoord)
+void Text::setRect(const QRect &rect)
 {
-    corner_vertex = QPoint(xcoord, ycoord);
+	setPos(rect.center());
+	width = rect.width();
+	height = rect.height();
 }
 
-void Text::Draw(QPaintDevice *device)
+QRect Text::getRect() const
+{
+	QFontMetrics fontdeets{font};
+	QSize size{((width < 0) ? (int)(fontdeets.horizontalAdvance(text) * 1.1): width),
+	((height < 0) ? (int)(fontdeets.height() * 1.1): height)};
+
+	QRect rect{QPoint{}, size};
+	rect.moveCenter(getPos());
+	return rect;
+}
+
+void Text::draw(QPaintDevice *device)
 {
 	getPainter().begin(device);
 	getPainter().setPen(getPen());
 	getPainter().setFont(getFont());
-    //save the settings
-    getPainter().save();
-    //bounding box has to be big enough to display text
-	getPainter().drawText(corner_vertex.x(), corner_vertex.y(), width, length,
-	alignment_list[alignment_flag], text);
-    //restore the settings from "save"
-    getPainter().restore();
+	getPainter().translate(getPos());
+
+	QRect rect = getRect();
+	rect.moveCenter(QPoint{});
+
+	getPainter().setFont(font);
+	getPainter().drawText(rect, alignment, text);
 	getPainter().end();
 }

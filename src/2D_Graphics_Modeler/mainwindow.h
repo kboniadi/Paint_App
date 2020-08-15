@@ -2,11 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTreeWidgetItem>
+#include <QLabel>
 #include "login.h"
 #include "about.h"
-#include "delete.h"
-#include "renderarea.h"
-#include "move.h"
+#include "storage.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -37,24 +37,23 @@ public:
      * \brief sets renderArea's cursor
      */
     void SetDrawCursor(const QCursor&);
-public slots:
-    /*!
-     * \brief deletes a Shape from renderArea by ID
-     * \param ID of Shape
-     */
-    void ID_Delete_Signal_Handler(int ID);
-
-    /*!
-     * \brief take in the signal from the Move_Signal() from the Move object
-     */
-    void Move_Signal_Handler(int ID, int x_coord, int y_coord);
+	void SetStatusBar(const QString&, int timeout = 0);
+signals:
+	void onCanvasClick(int x, int y);
+	void onCanvasDoubleClick(int x, int y);
+	void onCanvasDrag(int x, int y);
 protected:
     /*!
      * \brief accpets the close event
      * \param close event
      */
 	void closeEvent(QCloseEvent *event) override;
+	void keyPressEvent(QKeyEvent *event) override;
 private slots:
+
+	void on_shapeList_currentIndexChanged(int index);
+
+	void onDataChanged();
     /*!
      * \brief slot for actionLogin
      *        shows Login window
@@ -124,19 +123,31 @@ private slots:
     /*!
      * \brief move the shape when 'Ok' is pressed in the "Move" dialogue
      */
-    void on_actionMove_triggered();
+	void on_actionMove_triggered();
+	void on_actionNew_triggered();
+
+	void on_actionSave_triggered();
+
+	void on_actionOpen_triggered();
 
 private:
+	template<class T>
+	void AddRect(int x, int y);
 	/*!
 	 * @brief activates or deactivates the setEnabled() functions in
 	 * actionLogin or action logout
 	 * @param (bool) value that controls the current user permissions
 	 */
+	void Disconnect();
+	void DisconnectDoubleClick();
+	void DisconnectDrag();
 	void SetAdminRights(bool);
+
+	Storage storage;
 	Ui::MainWindow *ui;			//!< ptr to the mainWindow UI
-	RenderArea *renderArea;		//!< ptr to the RenderArea class linked with
-								//!< ui::renderarea
 	QList<QObject*> adminFeats;	//!< list of action_triggers that only
 								//!< admin can use
+	QLabel status;
+	bool modified;
 };
 #endif // MAINWINDOW_H

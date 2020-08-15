@@ -1,47 +1,83 @@
 #include "shape.h"
+#include <QMap>
 
+id_t Shape::shapeid = 0;
 
-Shape::Shape(int shapeId, int color, QString shapeType) : id{shapeId}, shape{shapeType}
+const QMap<Shape::ShapeType, QString> SHAPE_NAMES {
+	{Shape::Line, "Line"},
+	{Shape::Polyline, "Polyline"},
+	{Shape::Polygon, "Polygon"},
+	{Shape::Rectangle, "Rectangle"},
+	{Shape::Ellipse, "Ellipse"},
+	{Shape::Text, "Text"}
+};
+
+const QMap<QString, QColor> COLOR_NAMES {
+	{"white", QColor{Qt::white}},
+	{"black", QColor{Qt::black}},
+	{"red", QColor{Qt::red}},
+	{"green", QColor{Qt::green}},
+	{"blue", QColor{Qt::blue}},
+	{"cyan", QColor{Qt::cyan}},
+	{"magenta", QColor{Qt::magenta}},
+	{"yellow", QColor{Qt::yellow}},
+	{"gray", QColor{Qt::gray}}
+};
+
+const QMap<Qt::PenStyle, QString> STYLE_NAMES {
+	{Qt::NoPen, "NoPen"},
+	{Qt::SolidLine, "SolidLine"},
+	{Qt::DashLine, "DashLine"},
+	{Qt::DotLine, "DotLine"},
+	{Qt::DashDotLine, "DashDotLine"},
+	{Qt::DashDotDotLine, "DashDotDotLine"},
+	{Qt::CustomDashLine, "CustomDashLine"}
+};
+
+const QMap<Qt::PenCapStyle, QString> CAP_NAMES {
+	{Qt::FlatCap, "FlatCap"},
+	{Qt::SquareCap, "SquareCap"},
+	{Qt::RoundCap, "RoundCap"}
+};
+
+const QMap<Qt::PenJoinStyle, QString> JOIN_NAMES {
+	{Qt::MiterJoin, "MiterJoin"},
+	{Qt::BevelJoin, "BevelJoin"},
+	{Qt::RoundJoin, "RoundJoin"},
+	{Qt::SvgMiterJoin, "SvgMiterJoin"}
+};
+
+const QMap<Qt::BrushStyle, QString> BSTYLE_NAMES {
+	{Qt::NoBrush, "NoBrush"},
+	{Qt::SolidPattern, "SolidPattern"},
+	{Qt::HorPattern, "HorPattern"},
+	{Qt::VerPattern, "VerPattern"}
+};
+
+Shape::Shape(const QPoint& pos, id_t id, const QPen& pen, const QBrush& brush)
+	: position{pos}, id{id}, pen{std::move(pen)}, brush{brush}
 {
-    pen.setColor(color_list[color]);
+	if (id == 0)
+		this->id = ++shapeid;
+	else if (id != (id_t) -1 && id > shapeid)
+		shapeid = id;
 }
 
-Shape::Shape(int shapeId, int color, int width, int style, int cap, int join,
-             int brush_color, int brush_style, QString shapeType) : id{shapeId}, shape{shapeType}
+void Shape::move(int dx, int dy)
 {
-	assert(color < 17 && color > -1);
-	assert(style < 7 && style > -1);
-	assert(cap < 3 && cap > -1);
-	assert(join < 4 && join > -1);
-	pen.setColor(color_list[color]);
-	pen.setWidth(width);
-	pen.setStyle(style_list[style]);
-	pen.setCapStyle(cap_list[cap]);
-	pen.setJoinStyle(join_list[join]);
-	brush.setColor(color_list[brush_color]);
-	brush.setStyle(bstyle_list[brush_style]);
+	position.rx() += dx;
+	position.ry() += dy;
 }
 
-void Shape::setPen(Qt::GlobalColor color, qreal width, Qt::PenStyle style,
-	Qt::PenCapStyle cap, Qt::PenJoinStyle join)
+bool Shape::hasfill(Shape::ShapeType type)
 {
-	pen.setColor(color);
-	pen.setWidth(width);
-	pen.setStyle(style);
-	pen.setCapStyle(cap);
-	pen.setJoinStyle(join);
+	return type != Line && type != Polyline && type != Text;
 }
 
-void Shape::setBrush(Qt::GlobalColor color, Qt::BrushStyle style)
+void Shape::swap(Shape &other) noexcept
 {
-	brush.setColor(color);
-	brush.setStyle(style);
-}
-
-void Shape::setDefautStyle()
-{
-	pen = QPen();
-	brush = QBrush();
-	painter.setPen(pen);
-	painter.setBrush(brush);
+	std::swap(id, other.id);
+	std::swap(pen, other.pen);
+	std::swap(brush, other.brush);
+	std::swap(position, other.position);
 }
