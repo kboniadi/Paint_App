@@ -11,6 +11,7 @@
 #include "shapepropdelegate.h"
 #include "proptree.h"
 #include "itembutton.h"
+#include "serialization.h"
 
 //need this for QGridLayout
 #include <QtWidgets>
@@ -33,7 +34,9 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-	setWindowTitle(tr("Chameleon Painter"));
+
+	resize(sizeHint());
+	setWindowTitle(tr("Chameleon Painter (Untitled)"));
 	ui->statusbar->addWidget(&status);
 	adminFeats = {
 		ui->actionAdd_Ellipse,
@@ -52,9 +55,8 @@ MainWindow::MainWindow(QWidget *parent)
 		ui->prop_tree,
 	};
 
-	SetAdminRights(false);
+	SetAdminRights(true);
 
-	storage.shapes = textParse();
 	ui->renderarea->setStorage(&storage.shapes);
 
 	ui->shapeList->setModel(&storage.model);
@@ -235,8 +237,8 @@ void MainWindow::on_actionAdd_Line_triggered()
 
 		disconnect(this, &MainWindow::onCanvasClick, nullptr, nullptr);
 		SetStatusBar("Click to set the ending point for the line");
-		connect(this, &MainWindow::onCanvasClick, [this, line](int x, int y) {
-			Disconnect();
+		connect(this, &MainWindow::onCanvasDrag, [this, line](int x, int y) {
+//			Disconnect();
 
 			line->setEnd(QPoint{x, y});
 			onDataChanged();
@@ -267,7 +269,6 @@ void MainWindow::on_actionAdd_Text_triggered()
 void MainWindow::on_actionDelete_triggered()
 {
 	Disconnect();
-	DisconnectDrag();
 	SetDrawCursor(Qt::PointingHandCursor);
 	SetStatusBar("Hit the ESC key to exit delete mode");
 	QObject::connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
@@ -279,29 +280,52 @@ void MainWindow::on_actionDelete_triggered()
 					y >= (*it)->getRect().y() &&
 					y <= (*it)->getRect().y() + (*it)->getRect().height()) {
 					ui->shapeList->setCurrentIndex(count);
+
+					int numShapes = ui->shapeList->currentIndex();
+					auto it = storage.shapes.begin();
+					for (int i = 0; i < numShapes; i++) {
+						++it;
+					}
+					delete *it;
+
+					storage.shapes.erase(it);
+					storage.model.itemsChanged();
+					onDataChanged();
+
+					if (storage.shapes.size() == 0) {
+						on_shapeList_currentIndexChanged(0);
+					}
+					else if (numShapes >= (int) storage.shapes.size()) {
+						ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
+					}
+					else {
+						ui->shapeList->setCurrentIndex(numShapes);
+					}
+
+					break;
 				}
 				count++;
 			}
-			int numShapes = ui->shapeList->currentIndex();
-			auto it = storage.shapes.begin();
-			for (int i = 0; i < numShapes; i++) {
-				++it;
-			}
-			delete *it;
+//			int numShapes = ui->shapeList->currentIndex();
+//			auto it = storage.shapes.begin();
+//			for (int i = 0; i < numShapes; i++) {
+//				++it;
+//			}
+//			delete *it;
 
-			storage.shapes.erase(it);
-			storage.model.itemsChanged();
-			onDataChanged();
+//			storage.shapes.erase(it);
+//			storage.model.itemsChanged();
+//			onDataChanged();
 
-			if (storage.shapes.size() == 0) {
-				on_shapeList_currentIndexChanged(0);
-			}
-			else if (numShapes >= (int) storage.shapes.size()) {
-				ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
-			}
-			else {
-				ui->shapeList->setCurrentIndex(numShapes);
-			}
+//			if (storage.shapes.size() == 0) {
+//				on_shapeList_currentIndexChanged(0);
+//			}
+//			else if (numShapes >= (int) storage.shapes.size()) {
+//				ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
+//			}
+//			else {
+//				ui->shapeList->setCurrentIndex(numShapes);
+//			}
 		}
 	});
 //	int numShapes = ui->shapeList->currentIndex();
@@ -430,6 +454,8 @@ void MainWindow::on_actionNew_triggered()
 	for (auto itr = storage.shapes.begin(); itr != storage.shapes.end(); ++itr)
 		delete *itr;
 
+	Shape::shapeid = 0;
+	setWindowTitle(tr("Chameleon Painter (Untitled)"));
 	storage.shapes.clear();
 	storage.model.itemsChanged();
 	on_shapeList_currentIndexChanged(0);
@@ -482,4 +508,36 @@ void MainWindow::SetAdminRights(bool val)
 	}
 	ui->actionLogin->setEnabled(!val);
 	ui->actionLogout->setEnabled(val);
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+	QString filename = QFileDialog::getSaveFileName(this,
+													tr("Save File"),
+													QDir::homePath(),
+													tr("TEXT file (*.txt)"));
+	{
+		std::ofstream file{filename.toStdString()};
+		file << storage.shapes;
+	}
+
+	QFileInfo info{filename};
+	SetStatusBar("File has been saved", 1000);
+	setWindowTitle(tr("Chameleon Painter (%1)").arg(info.fileName()));
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+	QString filename = QFileDialog::getOpenFileName(this,
+													tr("Open File"),
+													QDir::homePath(),
+													tr("TEXT file (*.txt)"));
+
+	if (!filename.isEmpty()) {
+		QFileInfo info{filename};
+		on_actionNew_triggered();
+		storage.shapes = textParse(filename);
+		onDataChanged();
+		setWindowTitle(tr("Chameleon Painter (%1)").arg(info.fileName()));
+	}
 }

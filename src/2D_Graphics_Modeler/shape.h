@@ -13,6 +13,8 @@ class Shape {
 public:
 
 	using id_t = unsigned int;
+	static id_t shapeid;
+
 	/*!
 	 * \enum ShapeType
 	 * \brief Represents different supported shapes

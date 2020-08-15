@@ -195,9 +195,10 @@ PropertyItem<Text>::PropertyItem(QTreeWidgetItem* parent, Text& text)
 void Disconnect(MainWindow* window, QTreeWidget* tree)
 {
 	QObject::disconnect(window, &MainWindow::onCanvasClick, nullptr, nullptr);
+//	QObject::disconnect(window, &MainWindow::onCanvasDrag, nullptr, nullptr);
 	QObject::disconnect(tree, &QTreeWidget::currentItemChanged, nullptr, nullptr);
-	window->SetDrawCursor(Qt::ArrowCursor);
-	window->SetStatusBar("");
+//	window->SetDrawCursor(Qt::ArrowCursor);
+//	window->SetStatusBar("");
 }
 
 MainWindow* GetWindow(QTreeWidgetItem* item)
@@ -227,24 +228,24 @@ PropertyItem<QPoint>::PropertyItem(QTreeWidgetItem* parent, QString name, getter
 				[this](int y) { setter(QPoint{getter().x(), y}); }
 	);
 
-	auto* window = GetWindow(this);
+//	auto* window = GetWindow(this);
 
-	auto* buttonWidget = new ItemButton({{QIcon{":/icons/target.png"}, "Set position with mouse"}});
-	QObject::connect(buttonWidget, &ItemButton::clicked, [this, window]() {
-		treeWidget()->setCurrentItem(this);
-		// Set pointer
-		window->SetDrawCursor(Qt::CrossCursor);
-		window->SetStatusBar("Click to set position");
-		// Set setter
-		QObject::connect(window, &MainWindow::onCanvasClick, [this, window](int x, int y) {
-			setter(QPoint{x, y});
-			emitDataChanged();
-			// Unset setter
-			Disconnect(window, treeWidget());
-		});
-		QObject::connect(treeWidget(), &QTreeWidget::currentItemChanged, std::bind(&Disconnect, window, treeWidget()));
-	});
-	treeWidget()->setItemWidget(this, 1, buttonWidget);
+//	auto* buttonWidget = new ItemButton({{QIcon{":/icons/target.png"}, "Set position with mouse"}});
+//	QObject::connect(buttonWidget, &ItemButton::clicked, [this, window]() {
+//		treeWidget()->setCurrentItem(this);
+//		// Set pointer
+//		window->SetDrawCursor(Qt::CrossCursor);
+//		window->SetStatusBar("Click to set position");
+//		// Set setter
+//		QObject::connect(window, &MainWindow::onCanvasClick, [this, window](int x, int y) {
+//			setter(QPoint{x, y});
+//			emitDataChanged();
+//			// Unset setter
+//			Disconnect(window, treeWidget());
+//		});
+//		QObject::connect(treeWidget(), &QTreeWidget::currentItemChanged, std::bind(&Disconnect, window, treeWidget()));
+//	});
+//	treeWidget()->setItemWidget(this, 1, buttonWidget);
 }
 
 QVariant PropertyItem<QPoint>::data(int column, int role) const
@@ -289,8 +290,8 @@ PropertyItem<QList<QPoint>>::PropertyItem(QTreeWidgetItem* parent, QString name,
 	}
 
 	auto* buttons = new ItemButton{{
-			{QIcon{":/icons/add.png"}, "Begin appending points"},
-			{QIcon{":/icons/remove.png"}, "Remove last point"}
+			{QIcon{":/res/img/add.png"}, "Begin appending points"},
+			{QIcon{":/res/img/remove.png"}, "Remove last point"}
 	}};
 
 	buttons->button(1)->setEnabled(count != 0);
@@ -326,12 +327,14 @@ void PropertyItem<QList<QPoint>>::add()
 		emitDataChanged();
 		dynamic_cast<ItemButton*>(treeWidget()->itemWidget(this, 1))->button(1)->setEnabled(true);
 	});
-	QObject::connect(treeWidget(), &QTreeWidget::currentItemChanged, std::bind(&Disconnect, window, treeWidget()));
+//	QObject::connect(treeWidget(), &QTreeWidget::currentItemChanged, std::bind(&Disconnect, window, treeWidget()));
 }
 
 void PropertyItem<QList<QPoint>>::remove()
 {
 	auto* window = GetWindow(this);
+	window->SetStatusBar("");
+	window->SetDrawCursor(Qt::ArrowCursor);
 
 	Disconnect(window, treeWidget());
 
@@ -392,42 +395,56 @@ PropertyItem<QRect>::PropertyItem(QTreeWidgetItem* parent, QString name, getter_
 	);
 
 	auto* window = GetWindow(this);
-
 	auto* buttons = new ItemButton{{
-			{QIcon{":/icons/corner.png"}, "Move the upper-left corner with the mouse (size stays the same)"},
-			{QIcon{":/icons/size.png"}, "Set the bottom-right corner with the mouse (changes size)"}
+			{QIcon{":/res/img/size.png"}, "Set the bottom-right corner with the mouse (changes size)"}
 	}};
-	QObject::connect(buttons, &ItemButton::clicked, [this, window](int i) {
+	QObject::connect(buttons, &ItemButton::clicked, [this, window]() {
+		QObject::disconnect(window, &MainWindow::onCanvasClick, nullptr, nullptr);
+		QObject::disconnect(window, &MainWindow::onCanvasDrag, nullptr, nullptr);
+		window->SetStatusBar("");
+
 		window->SetDrawCursor(Qt::CrossCursor);
-		switch (i) {
-		case 0:
-			treeWidget()->setCurrentItem(this->child(0));
-			// Set pointer
-			window->SetStatusBar("Click to move the top-left corner");
-			// Set setter
-			QObject::connect(window, &MainWindow::onCanvasClick, [this, window](int x, int y) {
-				QRect r = getter();
-				r.moveTopLeft(QPoint{x, y});
-				setter(r);
-				emitDataChanged();
-				// Unset setter
-				Disconnect(window, treeWidget());
-			});
-			break;
-		case 1:
-			treeWidget()->setCurrentItem(this->child(2));
-			// Set pointer
-			window->SetStatusBar("Click to set the bottom-right corner");
-			// Set setter
-			QObject::connect(window, &MainWindow::onCanvasClick, [this, window](int x, int y) {
-				QRect r = getter();
-				r.setBottomRight(QPoint{x, y});
-				setter(r.normalized());
-				emitDataChanged();
-				// Unset setter
-				Disconnect(window, treeWidget());
-			});
-		}
+//		switch (i) {
+//		case 0:
+//			treeWidget()->setCurrentItem(this->child(0));
+//			// Set pointer
+//			window->SetStatusBar("Click to move the top-left corner");
+//			// Set setter
+//			QObject::connect(window, &MainWindow::onCanvasClick, [this, window](int x, int y) {
+//				QRect r = getter();
+//				r.moveTopLeft(QPoint{x, y});
+//				setter(r);
+//				emitDataChanged();
+//				// Unset setter
+//				Disconnect(window, treeWidget());
+//			});
+//			break;
+//		case 1:
+//			treeWidget()->setCurrentItem(this->child(2));
+//			// Set pointer
+//			window->SetStatusBar("Click to set the bottom-right corner");
+//			// Set setter
+//			QObject::connect(window, &MainWindow::onCanvasClick, [this, window](int x, int y) {
+//				QRect r = getter();
+//				r.setBottomRight(QPoint{x, y});
+//				setter(r.normalized());
+//				emitDataChanged();
+//				// Unset setter
+//				Disconnect(window, treeWidget());
+//			});
+//		}
+		treeWidget()->setCurrentItem(this->child(2));
+		// Set pointer
+		window->SetStatusBar("Click and drag to set the bottom-right corner");
+		// Set setter
+		QObject::connect(window, &MainWindow::onCanvasDrag, [this, window](int x, int y) {
+			QRect r = getter();
+			r.setBottomRight(QPoint{x, y});
+			setter(r.normalized());
+			emitDataChanged();
+			// Unset setter
+			Disconnect(window, treeWidget());
+		});
 		QObject::connect(treeWidget(), &QTreeWidget::currentItemChanged, std::bind(&Disconnect, window, treeWidget()));
 	});
 	treeWidget()->setItemWidget(this, 1, buttons);

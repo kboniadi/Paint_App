@@ -14,7 +14,7 @@
 #include "ellipse.h"
 
 //!@brief text parser modifies vector<Shape *> to add typecast polymorphic objects to shape class.
-cs1c::vector< Shape * > textParse();
+cs1c::vector< Shape * > textParse(QString);
 
 // helper functions for encapsulation of switch cases
 

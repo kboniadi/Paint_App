@@ -1,7 +1,7 @@
 #include "shape.h"
 #include <QMap>
 
-static unsigned int shapeid = 0;
+id_t Shape::shapeid = 0;
 
 const QMap<Shape::ShapeType, QString> SHAPE_NAMES {
 	{Shape::Line, "Line"},
@@ -71,9 +71,7 @@ void Shape::move(int dx, int dy)
 
 bool Shape::hasfill(Shape::ShapeType type)
 {
-	return    type != Line
-		   && type != Polyline
-		   && type != Text;
+	return type != Line && type != Polyline && type != Text;
 }
 
 void Shape::swap(Shape &other) noexcept

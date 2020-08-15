@@ -39,7 +39,7 @@ QRect Rectangle::getRect() const
 
 void Rectangle::setRect(const QRect &rect)
 {
-	Shape::setPos(rect.center());
+	setPos(rect.center());
 	width = rect.width();
 	height = rect.height();
 }

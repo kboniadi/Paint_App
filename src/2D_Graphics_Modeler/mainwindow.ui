@@ -256,7 +256,7 @@
   <action name="actionAdd_Line">
    <property name="icon">
     <iconset resource="Resource.qrc">
-     <normaloff>:/res/img/remove.png</normaloff>:/res/img/remove.png</iconset>
+     <normaloff>:/res/img/line.png</normaloff>:/res/img/line.png</iconset>
    </property>
    <property name="text">
     <string>Add Line</string>

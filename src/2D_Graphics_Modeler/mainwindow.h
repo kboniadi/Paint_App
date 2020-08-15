@@ -126,6 +126,10 @@ private slots:
 	void on_actionMove_triggered();
 	void on_actionNew_triggered();
 
+	void on_actionSave_triggered();
+
+	void on_actionOpen_triggered();
+
 private:
 	template<class T>
 	void AddRect(int x, int y);

@@ -1,13 +1,5 @@
 #include "ellipse.h"
 
-//Ellipse::Ellipse(QGraphicsItem *parent): QGraphicsItem{parent} {}
-
-Ellipse::Ellipse(Shape::id_t id, const QPen &pen, const QBrush &brush, const QPoint &point, int x, int y)
-	: Rectangle{pen, brush, point, id, x, y}
-{
-//	setFlag(ItemIsMovable);
-}
-
 Ellipse::~Ellipse() = default;
 
 Ellipse::Ellipse(Ellipse &&other) noexcept
@@ -53,35 +45,3 @@ double Ellipse::perimeter() const
 	return M_PI * (width+height) *
 			( 3 * ( c / (d * sqrt(-3*c/d+4) + 10) ) + 1 );
 }
-
-//void Ellipse::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
-//{
-//	painter->setPen(getPen());
-//	painter->setBrush(getBrush());
-////	painter->setBrush(Qt::yellow);
-//	painter->translate(getPos());
-
-//	QRect rect = getRect();
-////	QRect rect = {0,0,50,50};
-//	rect.moveCenter(QPoint{});
-
-//	painter->drawEllipse(rect);
-//}
-
-//QRectF Ellipse::boundingRect() const
-//{
-//	return QRectF{getRect()};
-//}
-
-//void Ellipse::mousePressEvent(QGraphicsSceneMouseEvent *event)
-//{
-//	update();
-//	QGraphicsItem::mousePressEvent(event);
-//}
-
-//void Ellipse::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-//{
-//	update();
-//	QGraphicsItem::mouseReleaseEvent(event);
-
-//}

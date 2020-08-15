@@ -6,7 +6,7 @@
 #include <QDebug>
 
 RenderArea::RenderArea(QWidget *parent)
-	: QWidget(parent), shapes{nullptr}, target{":/res/img/target_small.png"}, selected{-1}
+	: QWidget(parent), shapes{nullptr}, target{":/res/img/target.png"}, selected{-1}
 {
     //sets the background to white
     setBackgroundRole(QPalette::Base);
@@ -14,14 +14,14 @@ RenderArea::RenderArea(QWidget *parent)
 	setMouseTracking(true);
 }
 
-//QSize RenderArea::sizeHint() const
-//{
-//    return QSize(400, 200);
-//}
+QSize RenderArea::sizeHint() const
+{
+	return QSize(1280, 700);
+}
 
 //QSize RenderArea::minimumSizeHint() const
 //{
-//	return QSize(1200, 700);
+//	return QSize(800, 600);
 //}
 
 void RenderArea::setStorage(cs1c::vector<Shape *> *v)
@@ -55,7 +55,7 @@ void RenderArea::paintEvent(QPaintEvent */*event*/)
 			paint.drawImage(s->getPos() - offset, target);
 		}
 
-	}
+	}	
 }
 
 void RenderArea::addShape(Shape *shape)

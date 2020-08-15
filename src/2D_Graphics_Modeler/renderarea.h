@@ -28,10 +28,10 @@ public:
 	RenderArea(QWidget *parent = nullptr);
 
     //!@ smallest size the render area window can be
-//    QSize minimumSizeHint() const override;
+//	QSize minimumSizeHint() const override;
 
     //!@ size of render area when it opens
-//    QSize sizeHint() const override;
+	QSize sizeHint() const override;
 
     /*!
      * @brief Destructor deallocates memory

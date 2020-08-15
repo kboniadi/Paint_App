@@ -1,4 +1,6 @@
 #include "textparse.h"
+#include <QFile>
+#include <QTextStream>
 #include <QDebug>
 
 // helper functions for encapsulation of switch cases
@@ -134,7 +136,7 @@ Shape * parsePolygon(std::ifstream& in, int shapeid, std::vector<int> &dims) {
     in.ignore(100, ' ');
     in >> brushstyle;
 
-	QBrush brush(getColor(brushcolor));
+	QBrush brush(getColor(brushcolor), getBrushStyle(brushstyle));
 	QBrush penbrush(getColor(pencolor));
 	QPen pen(penbrush, penwidth, getPenStyle(penstyle), getCapStyle(pencap), getJoinStyle(penjoin));
 	std::vector<QPoint> points(dims.size() / 2);
@@ -172,11 +174,11 @@ Shape * parseRectangle(std::ifstream& in, int shapeid, std::vector<int> &dims) {
     in.ignore(100, ' ');
     in >> brushstyle;
 
-	QBrush brush(getColor(brushcolor));
+	QBrush brush(getColor(brushcolor), getBrushStyle(brushstyle));
 	QBrush penbrush(getColor(pencolor));
 	QPen pen(penbrush, penwidth, getPenStyle(penstyle), getCapStyle(pencap), getJoinStyle(penjoin));
 
-	return new Rectangle(pen, brush, QPoint(dims[0], dims[1]), shapeid, dims[2], dims[3]);
+	return new Rectangle(QRect{QPoint{dims[0], dims[1]}, QSize{dims[2], dims[3]}}, shapeid, pen, brush);
 }
 
 Shape * parseSquare(std::ifstream& in, int shapeid, std::vector<int> &dims) {
@@ -203,11 +205,11 @@ Shape * parseSquare(std::ifstream& in, int shapeid, std::vector<int> &dims) {
     in.ignore(100, ' ');
     in >> brushstyle;
 
-	QBrush brush(getColor(brushcolor));
+	QBrush brush(getColor(brushcolor), getBrushStyle(brushstyle));
 	QBrush penbrush(getColor(pencolor));
 	QPen pen(penbrush, penwidth, getPenStyle(penstyle), getCapStyle(pencap), getJoinStyle(penjoin));
 
-	return new Rectangle(pen, brush, QPoint(dims[0], dims[1]), shapeid, dims[2], dims[2]);
+	return new Rectangle(QRect{QPoint{dims[0], dims[1]}, QSize{dims[2], dims[2]}}, shapeid, pen, brush);
 }
 
 Shape * parseEllip(std::ifstream& in, int shapeid, std::vector<int> &dims) {
@@ -234,11 +236,11 @@ Shape * parseEllip(std::ifstream& in, int shapeid, std::vector<int> &dims) {
     in.ignore(100, ' ');
     in >> brushstyle;
 
-	QBrush brush(getColor(brushcolor));
+	QBrush brush(getColor(brushcolor), getBrushStyle(brushstyle));
 	QBrush penbrush(getColor(pencolor));
 	QPen pen(penbrush, penwidth, getPenStyle(penstyle), getCapStyle(pencap), getJoinStyle(penjoin));
 
-	return new Ellipse(shapeid, pen, brush, QPoint(dims[0], dims[1]), dims[2], dims[3]);
+	return new Ellipse(QRect{QPoint{dims[0], dims[1]}, QSize{dims[2], dims[3]}}, shapeid, pen, brush);
 }
 
 Shape * parseCircle(std::ifstream& in, int shapeid, std::vector<int> &dims) {
@@ -265,11 +267,11 @@ Shape * parseCircle(std::ifstream& in, int shapeid, std::vector<int> &dims) {
     in.ignore(100, ' ');
     in >> brushstyle;
 
-	QBrush brush(getColor(brushcolor));
+	QBrush brush(getColor(brushcolor), getBrushStyle(brushstyle));
 	QBrush penbrush(getColor(pencolor));
 	QPen pen(penbrush, penwidth, getPenStyle(penstyle), getCapStyle(pencap), getJoinStyle(penjoin));
 
-	return new Ellipse(shapeid, pen, brush, QPoint(dims[0], dims[1]), dims[2], dims[2]);
+	return new Ellipse(QRect{QPoint{dims[0], dims[1]}, QSize{dims[2], dims[2]}}, shapeid, pen, brush);
 }
 
 Shape * parseText(std::ifstream& in, int shapeid, std::vector<int> &dims) {
@@ -300,9 +302,14 @@ Shape * parseText(std::ifstream& in, int shapeid, std::vector<int> &dims) {
 	pen.setCapStyle(getCapStyle(textFontStyle));
 	QFont font(fontfam.trimmed(), textpointsize, getFontWeight(textFontWeight), false);
 
-	return new Text(pen, brush, QPoint(dims[0], dims[1]), shapeid, font,
+	Text *p_text = new Text(pen, brush, QPoint(dims[0], dims[1]), shapeid, font,
 		str.trimmed(), ALIGNMENT_TYPES.key(QString::fromStdString(textAlig)),
 		dims[2], dims[3]);
+	QRect rect = p_text->getRect();
+	rect.moveTopLeft(QPoint(dims[0], dims[1]));
+	p_text->setRect(rect);
+
+	return p_text;
 }
 
 Shape::ShapeType getShapeType(std::string key) {
@@ -317,9 +324,8 @@ Shape::ShapeType getShapeType(std::string key) {
 	return Shape::ShapeType::NoShape;
 }
 
-cs1c::vector<Shape *> textParse() {
-    std::ifstream in;
-    in.open("shapes.txt");
+cs1c::vector<Shape *> textParse(QString filename) {
+	std::ifstream in{filename.toStdString()};
     std::string shapeType;
 	std::vector<int> dims;
 	cs1c::vector<Shape*> shapes;
