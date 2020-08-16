@@ -24,6 +24,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QStatusBar>
+#include <QFileDialog>
 
 #include <fstream>
 #include <sstream>
@@ -512,16 +513,22 @@ void MainWindow::SetAdminRights(bool val)
 
 void MainWindow::on_actionSave_triggered()
 {
+	QString filter = "TEXT file (*.txt)";
 	QString filename = QFileDialog::getSaveFileName(this,
 													tr("Save File"),
 													QDir::homePath(),
-													tr("TEXT file (*.txt)"));
+													filter);
+
+	if (!filename.contains(tr(".txt"))) {
+		filename.append(".txt");
+	}
+
+	QFileInfo info{filename};
 	{
 		std::ofstream file{filename.toStdString()};
 		file << storage.shapes;
 	}
 
-	QFileInfo info{filename};
 	SetStatusBar("File has been saved", 1000);
 	setWindowTitle(tr("Chameleon Painter (%1)").arg(info.fileName()));
 }

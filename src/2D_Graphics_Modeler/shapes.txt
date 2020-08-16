@@ -30,7 +30,7 @@ BrushStyle: SolidPattern
 
 ShapeId: 4
 ShapeType: Rectangle
-ShapeDimensions: 20, 200, 170, 100
+ShapeDimensions: 100, 290, 170, 100
 PenColor: blue
 PenWidth: 10
 PenStyle: DashLine
@@ -41,7 +41,7 @@ BrushStyle: VerPattern
 
 ShapeId: 5
 ShapeType: Square
-ShapeDimensions: 250, 150, 200
+ShapeDimensions: 330, 240, 200
 PenColor: red
 PenWidth: 10
 PenStyle: SolidLine
@@ -52,7 +52,7 @@ BrushStyle: HorPattern
 
 ShapeId: 6
 ShapeType: Ellipse
-ShapeDimensions: 520, 200, 170, 100
+ShapeDimensions: 600, 290, 170, 100
 PenColor: black
 PenWidth: 12
 PenStyle: SolidLine
@@ -63,7 +63,7 @@ BrushStyle: NoBrush
 
 ShapeId: 7
 ShapeType: Circle
-ShapeDimensions: 750, 150, 200
+ShapeDimensions: 830, 240, 200
 PenColor: black
 PenWidth: 12
 PenStyle: SolidLine
