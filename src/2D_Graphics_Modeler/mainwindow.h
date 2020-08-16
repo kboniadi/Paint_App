@@ -40,7 +40,6 @@ public:
 	void SetStatusBar(const QString&, int timeout = 0);
 signals:
 	void onCanvasClick(int x, int y);
-	void onCanvasDoubleClick(int x, int y);
 	void onCanvasDrag(int x, int y);
 protected:
     /*!

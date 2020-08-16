@@ -77,37 +77,3 @@ void RenderArea::mouseMoveEvent(QMouseEvent *event)
 		dynamic_cast<MainWindow*>(window())->onCanvasDrag(event->x(), event->y());
 	}
 }
-
-void RenderArea::mouseDoubleClickEvent(QMouseEvent *event)
-{
-	if (event->button() & Qt::LeftButton) {
-		dynamic_cast<MainWindow*>(window())->onCanvasDoubleClick(event->x(), event->y());
-	}
-}
-
-//void RenderArea::mouseReleaseEvent(QMouseEvent *event)
-//{
-
-//}
-
-//int RenderArea::itemAt(const QPoint &pos)
-//{
-//	static int j= 1;
-//	QPainterPath path;
-
-//	for (int i = shapes->size() - 1; i >= 0; i--) {
-//		const Shape *item = (*shapes)[i];
-//		path.addRect(item->getRect());
-//		qDebug() << path;
-//		if (path.contains(pos - item->getPos())) {
-//			qDebug() << "collided " << j++ << '\n';
-//			return i;
-//		}
-//	}
-//	return -1;
-//}
-
-//void RenderArea::moveItemTo(const QPoint &pos)
-//{
-//	QPoint offset = pos - previous
-//}

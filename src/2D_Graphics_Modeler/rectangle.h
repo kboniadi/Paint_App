@@ -4,12 +4,12 @@
 #include <math.h>
 #include <QPoint>
 #include "shape.h"
-#include <QGraphicsItem>
+
 /*!
   \class Rectangle: inherits Shape
  * \brief This class represents a Rectangle object. It manages 4 attribute.
  */
-class Rectangle: public Shape/*, public QGraphicsItem*/{
+class Rectangle: public Shape{
 public:
     /*!
      * \brief initializes data pertaining to Rectangle and shape
@@ -68,8 +68,6 @@ public:
      * \return (double) perimeter of Rectangle
      */
     double perimeter() const override;
-//	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
-//	QRectF boundingRect() const override;
 
 protected:
 	explicit Rectangle(id_t id): Shape{QPoint{}, id}, width{0}, height{0} {}

@@ -13,22 +13,14 @@
 #include "itembutton.h"
 #include "serialization.h"
 
-//need this for QGridLayout
-#include <QtWidgets>
-#include <QComboBox>
-#include <QObject>
-
-#include <QAction>
+//#include <QAction>
 #include <QCloseEvent>
-#include <QComboBox>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QStatusBar>
+//#include <QComboBox>
+//#include <QMessageBox>
+//#include <QPushButton>
+//#include <QStatusBar>
 #include <QFileDialog>
-
-#include <fstream>
-#include <sstream>
-#include <QDebug>
+//#include <QDebug>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -56,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
 		ui->prop_tree,
 	};
 
-	SetAdminRights(true);
+	SetAdminRights(false);
 
 	ui->renderarea->setStorage(&storage.shapes);
 
@@ -226,7 +218,7 @@ void MainWindow::on_actionAdd_Line_triggered()
 {
 	Disconnect();
 	SetDrawCursor(Qt::CrossCursor);
-	SetStatusBar("Click to set the starting point for the line");
+	SetStatusBar("Click and drag to set the top-left and bottom-right points for the line");
 
 	connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
 		auto* line = new Line{QPoint{x, y}, QPoint{x, y}};
@@ -237,7 +229,7 @@ void MainWindow::on_actionAdd_Line_triggered()
 		ui->shapeList->setCurrentIndex(storage.shapes.size() - 1);
 
 		disconnect(this, &MainWindow::onCanvasClick, nullptr, nullptr);
-		SetStatusBar("Click to set the ending point for the line");
+//		SetStatusBar("Click to set the ending point for the line");
 		connect(this, &MainWindow::onCanvasDrag, [this, line](int x, int y) {
 //			Disconnect();
 
@@ -273,9 +265,9 @@ void MainWindow::on_actionDelete_triggered()
 	SetDrawCursor(Qt::PointingHandCursor);
 	SetStatusBar("Hit the ESC key to exit delete mode");
 	QObject::connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
-		int count = 0;
+		int count = storage.shapes.size() - 1;
 		if (storage.shapes.size() != 0) {
-			for (auto it = storage.shapes.begin(); it != storage.shapes.end(); ++it) {
+			for (auto it = storage.shapes.rbegin(); it != storage.shapes.rend(); ++it) {
 				if (x >= (*it)->getRect().x() &&
 					x <= (*it)->getRect().x() + (*it)->getRect().width() &&
 					y >= (*it)->getRect().y() &&
@@ -305,7 +297,7 @@ void MainWindow::on_actionDelete_triggered()
 
 					break;
 				}
-				count++;
+				--count;
 			}
 //			int numShapes = ui->shapeList->currentIndex();
 //			auto it = storage.shapes.begin();
@@ -358,7 +350,7 @@ void MainWindow::on_actionMove_triggered()
 	SetDrawCursor(Qt::OpenHandCursor);
 
 	QObject::connect(this, &MainWindow::onCanvasClick, [this](int x, int y) {
-		int count = 0;
+		int count = storage.shapes.size() - 1;
 		int dx = 0;
 		int dy = 0;
 //		qDebug() << storage.shapes[0]->getRect().x() << " " << storage.shapes[0]->getRect().y() << '\n';
@@ -366,7 +358,7 @@ void MainWindow::on_actionMove_triggered()
 //		qDebug() << x << ' ' << y << '\n';
 //		qDebug() << storage.shapes[0]->getPos() << '\n';
 		if (storage.shapes.size() != 0) {
-			for (auto it = storage.shapes.begin(); it != storage.shapes.end(); ++it) {
+			for (auto it = storage.shapes.rbegin(); it != storage.shapes.rend(); it++) {
 				if (x >= (*it)->getRect().x() &&
 					x <= (*it)->getRect().x() + (*it)->getRect().width() &&
 					y >= (*it)->getRect().y() &&
@@ -387,7 +379,7 @@ void MainWindow::on_actionMove_triggered()
 				} else {
 					DisconnectDrag();
 				}
-				count++;
+				--count;
 			}
 		}
 	});
@@ -485,11 +477,6 @@ void MainWindow::Disconnect()
 	QObject::disconnect(this, &MainWindow::onCanvasDrag, nullptr, nullptr);
 	SetDrawCursor(Qt::ArrowCursor);
 	SetStatusBar("");
-}
-
-void MainWindow::DisconnectDoubleClick()
-{
-	QObject::disconnect(this, &MainWindow::onCanvasDoubleClick, nullptr, nullptr);
 }
 
 void MainWindow::DisconnectDrag()

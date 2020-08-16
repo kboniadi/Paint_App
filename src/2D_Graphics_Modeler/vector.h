@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <iterator>
+#include <vector>
 
 namespace cs1c {
 
@@ -72,7 +73,7 @@ public:
         bool operator<=(const self_type& rhs) {return ptr_ <= rhs.ptr_;}
         bool operator>=(const self_type& rhs) {return ptr_ >= rhs.ptr_;}
         reference operator*() { return *ptr_; }
-        pointer operator->() { return ptr_; }
+		pointer operator->() { return std::addressof(operator*()); }	// return ptr_
         bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
         bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
         const T& operator[](std::size_t i) {return ptr_[i];}
@@ -135,18 +136,85 @@ public:
         bool operator<=(const self_type& rhs) {return ptr_ <= rhs.ptr_;}
         bool operator>=(const self_type& rhs) {return ptr_ >= rhs.ptr_;}
         const T& operator*() { return  *ptr_; }
-        const T* operator->() { return ptr_; }
+		const T* operator->() { return std::addressof(operator*()); }	// return ptr_
         bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
         bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
         const T& operator[](std::size_t i) {return ptr_[i];}
     private:
         pointer ptr_;
     };
+
+	// beginning of iterator class definition and iterator methods.
+	class reverse_iterator {
+
+
+	public:
+		// defining aliases for the different types to be used
+		typedef reverse_iterator self_type;
+		typedef T value_type;
+		typedef T& reference;
+		typedef T* pointer;
+		typedef std::random_access_iterator_tag iterator_category;
+		typedef std::ptrdiff_t difference_type;
+		explicit reverse_iterator(iterator ptr) : ptr_{ptr} {};
+		self_type operator++() {
+			--ptr_;
+			return *this;
+		}
+		self_type operator++(int) {
+			self_type i = *this;
+			ptr_--;
+			return i;
+		}
+		self_type& operator--() {
+			++ptr_;
+			return *this;
+		}
+		self_type operator--(int) {
+			self_type i = *this;
+			ptr_++;
+			return i;
+		}
+		std::size_t operator-(const self_type& rhs) {
+			return ptr_ + rhs.ptr_;
+		}
+		self_type operator-(std::size_t num) {
+			return reverse_iterator(ptr_ + num);
+		}
+		self_type operator+(std::size_t num) {
+			return reverse_iterator(ptr_ - num);
+		}
+		std::size_t operator+(const self_type& rhs) {
+			return ptr_ - rhs.ptr_;
+		}
+		self_type operator+= (int value) {
+			ptr_-=value;
+			return *this;
+		}
+		self_type operator-= (int value) {
+			ptr_+=value;
+			return *this;
+		}
+		bool operator<(const self_type& rhs) {return ptr_ > rhs.ptr_;}
+		bool operator>(const self_type& rhs) {return ptr_ < rhs.ptr_;}
+		bool operator<=(const self_type& rhs) {return ptr_ >= rhs.ptr_;}
+		bool operator>=(const self_type& rhs) {return ptr_ <= rhs.ptr_;}
+		reference operator*() { iterator temp = ptr_; return *--temp; }
+		pointer operator->() { return std::addressof(operator*()); }	// return ptr_
+		bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
+		bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
+		const T& operator[](std::size_t i) {return ptr_[-i - 1];}
+	private:
+		iterator ptr_;
+	};
+
     iterator begin() { return iterator(data); }
 	iterator end() { return iterator(data+size_); }
 	const_iterator begin() const { return const_iterator(data); }
 	const_iterator end() const { return const_iterator(data+size_); }
-    /*!
+	reverse_iterator rbegin() { return reverse_iterator(end()); }
+	reverse_iterator rend() { return reverse_iterator(begin()); }
+	/*!
      * \brief default constructor of vector. does not allocate memory
      * 
      * 
